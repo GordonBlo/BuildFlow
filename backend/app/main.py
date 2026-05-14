@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.database import Base, engine
 from app.routes.health_routes import router as health_router
+from app.routes.auth_routes import router as auth_router
 from app import models
 
 
@@ -32,4 +33,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.get
+def root():
+    return {
+        "message": "Welcome to the BuildFlow API",
+        "docs": "/docs",
+        "health": "/health"
+    }
+
 app.include_router(health_router)
+app.include_router(auth_router)
