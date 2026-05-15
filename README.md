@@ -1,6 +1,6 @@
 ## Current Status
 
-Version: 0.4.0
+Version: 0.5.0
 
 Implemented:
 - Basic FastAPI backend
@@ -12,6 +12,8 @@ Implemented:
 - User repository layer
 - User service layer
 - Register endpoint
+- Login endpoint
+- JWT access token generation
 - Health check endpoint
 - Database health check endpoint
 - React TypeScript frontend
