@@ -54,8 +54,8 @@ def login_user(db: Session, login_data: LoginRequest):
     
     access_token = create_access_token(
         data={
-            "sub": user.email,
-            "user_id": user.id
+            "sub": str(user.id),
+            "user_id": user.email
         }
     )
     return {
