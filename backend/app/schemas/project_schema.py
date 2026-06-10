@@ -12,6 +12,17 @@ class ProjectCreate(BaseModel):
     start_date: date | None = None
     deadline: date | None = None
 
+
+class ProjectUpdate(BaseModel):
+    name: str | None = Field(default=None, min_length=2, max_length=120)
+    description: str | None = Field(default=None, max_length=1000)
+    client_name: str | None = Field(default=None, max_length=120)
+    status: str | None = Field(default=None, max_length=50)
+    budget: float | None = Field(default=None, ge=0.0)
+    start_date: date | None = None
+    deadline: date | None = None
+
+
 class ProjectResponse(BaseModel):
     id: int
     name: str
@@ -22,6 +33,7 @@ class ProjectResponse(BaseModel):
     start_date: date | None
     deadline: date | None
     owner_id: int
+    is_archived: bool
     created_at: datetime
 
     model_config = {

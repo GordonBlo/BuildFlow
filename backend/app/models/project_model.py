@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 
-from sqlalchemy import Column, DateTime, Date, Float, ForeignKey, Integer, String, Text
+from sqlalchemy import Boolean, Column, DateTime, Date, Float, ForeignKey, Integer, String, Text
 
 from app.core.database import Base
 
@@ -18,6 +18,8 @@ class Project(Base):
     deadline = Column(Date, nullable=True)
 
     owner_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+
+    is_archived = Column(Boolean, default=False, nullable=False, index=True)
 
     created_at = Column(
         DateTime,
