@@ -19,7 +19,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title="BuildFlow API",
     description="Backend API for the BuildFlow construction project and finance management platform.",
-    version="0.7.0",
+    version="0.8.0",
     lifespan=lifespan
 )
 
@@ -34,7 +34,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get
+@app.get("/")
 def root():
     return {
         "message": "Welcome to the BuildFlow API",
