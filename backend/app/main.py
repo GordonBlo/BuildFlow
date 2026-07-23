@@ -20,7 +20,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title="BuildFlow API",
     description="Backend API for the BuildFlow construction project and finance management platform.",
-    version="0.8.0",
+    version="0.9.0",
     lifespan=lifespan
 )
 

@@ -10,9 +10,9 @@ This is my main portfolio project, built to demonstrate backend architecture, au
 
 ## Current Status
 
-**Version: 0.8.0**
+**Version: 0.9.0**
 
-The backend currently supports authentication, protected user routes, project ownership validation, project creation, project listing, project detail view, project update, and project archiving.
+The backend currently supports authentication, protected user routes, project ownership validation, project management, project archiving, and authenticated Task management within Projects.
 
 ---
 
@@ -34,6 +34,9 @@ The backend currently supports authentication, protected user routes, project ow
 * User service layer
 * Project repository layer
 * Project service layer
+* Task database model
+* Task repository layer
+* Task service layer
 * Project ownership validation
 * Project creation
 * Project listing
@@ -42,6 +45,14 @@ The backend currently supports authentication, protected user routes, project ow
 * Project archive endpoint
 * Archived projects hidden by default
 * Optional archived project listing with `include_archived=true`
+* Tasks linked to Projects
+* Task creation
+* Task listing by project
+* Task detail endpoint
+* Partial Task update
+* Task completion endpoint
+* Task access protected by project ownership
+* Archived projects are read-only while their Tasks remain readable
 * Health check endpoint
 * Database health check endpoint
 
@@ -133,6 +144,22 @@ backend/
 | PATCH  | `/api/projects/{project_id}`          | Update a project                                     |
 | PATCH  | `/api/projects/{project_id}/archive`  | Archive a project                                    |
 
+### Tasks
+
+All Task endpoints require JWT authentication. Tasks belong to Projects and are accessible only through Projects owned by the current user.
+
+| Method | Endpoint                                            | Description                                  |
+| ------ | --------------------------------------------------- | -------------------------------------------- |
+| POST   | `/api/projects/{project_id}/tasks`                  | Create a Task for a Project                  |
+| GET    | `/api/projects/{project_id}/tasks`                  | List Tasks for a Project                     |
+| GET    | `/api/projects/{project_id}/tasks/{task_id}`        | Get one Task by ID                           |
+| PATCH  | `/api/projects/{project_id}/tasks/{task_id}`        | Partially update a Task                      |
+| PATCH  | `/api/projects/{project_id}/tasks/{task_id}/complete` | Mark a Task as `done`                      |
+
+Task status values are `todo`, `in_progress`, and `done`. Task priority values are `low`, `medium`, and `high`. A due date is optional.
+
+Task creation, update, and completion are blocked for archived Projects because archived Projects are read-only. Tasks in archived Projects can still be listed and viewed. Invalid status or priority values are rejected by Pydantic validation.
+
 ### Health
 
 | Method | Endpoint     | Description           |
@@ -142,33 +169,25 @@ backend/
 
 ---
 
-## Latest Update — v0.8.0
+## Latest Update - v0.9.0
 
-BuildFlow v0.8.0 added project update and archive functionality.
+BuildFlow v0.9.0 added the Task module.
 
-Users can now update project fields such as:
+Authenticated users can now create Tasks within their own Projects, list a Project's Tasks, view Task details, partially update Tasks, and mark Tasks as complete. Each Task supports:
 
-* name
-* description
-* client name
-* status
-* budget
-* start date
-* deadline
+* a required title
+* an optional description
+* status values of `todo`, `in_progress`, or `done`
+* priority values of `low`, `medium`, or `high`
+* an optional due date
 
-Projects can also be archived instead of deleted. Archived projects are hidden from the normal project list by default, but they can still be retrieved with:
-
-```text
-GET /api/projects?include_archived=true
-```
-
-This improves the project lifecycle logic and brings the backend closer to a real project management application.
+Project ownership protects every Task endpoint. Archived Projects and their Tasks remain readable, but Task creation, updates, and completion are blocked because archived Projects are read-only. Pydantic validation rejects unsupported status and priority values.
 
 ---
 
 ## Manual Testing
 
-The v0.8.0 backend flow was tested through Swagger UI:
+The v0.9.0 backend flow was tested through Swagger UI:
 
 1. Register user
 2. Login user
@@ -180,6 +199,15 @@ The v0.8.0 backend flow was tested through Swagger UI:
 8. Archive project
 9. Verify archived project is hidden from normal project list
 10. Verify archived project appears with `include_archived=true`
+11. Create a Task for a Project
+12. List Tasks by Project
+13. Get Task details
+14. Partially update a Task
+15. Mark a Task as complete
+16. Verify another user's Project Tasks are inaccessible
+17. Verify archived Project Tasks remain readable
+18. Verify archived Project Tasks cannot be created, updated, or completed
+19. Verify invalid Task status and priority values are rejected
 
 ---
 
@@ -202,13 +230,15 @@ The workflow focuses on:
 
 ## Roadmap
 
-### v0.9
+### v0.9.0 - Complete
 
 * Task module
 * Task creation
-* Task listing
-* Task ownership validation
-* Task update and completion status
+* Task listing and detail
+* Partial Task update
+* Task completion
+* Project ownership protection
+* Archived Project read-only rules
 
 ### v0.10
 

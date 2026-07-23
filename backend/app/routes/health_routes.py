@@ -16,7 +16,7 @@ def health_check():
     return {
         "status": "ok",
         "message": "BuildFlow API is running",
-        "version": "0.7.0"
+        "version": "0.9.0"
     }
 
 
