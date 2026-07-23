@@ -7,6 +7,7 @@ from app.core.database import Base, engine
 from app.routes.auth_routes import router as auth_router
 from app.routes.health_routes import router as health_router
 from app.routes.project_routes import router as project_router
+from app.routes.task_routes import router as task_router
 from app import models
 
 
@@ -19,7 +20,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title="BuildFlow API",
     description="Backend API for the BuildFlow construction project and finance management platform.",
-    version="0.7.0",
+    version="0.9.0",
     lifespan=lifespan
 )
 
@@ -34,7 +35,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get
+@app.get("/")
 def root():
     return {
         "message": "Welcome to the BuildFlow API",
@@ -45,3 +46,4 @@ def root():
 app.include_router(health_router)
 app.include_router(auth_router)
 app.include_router(project_router)
+app.include_router(task_router)
