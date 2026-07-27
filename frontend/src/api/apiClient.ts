@@ -1,4 +1,5 @@
 import { API_BASE_URL } from "../config/apiConfig";
+import { getAccessToken } from "../auth/tokenStorage";
 
 export class ApiError extends Error {
   readonly status: number;
@@ -50,9 +51,14 @@ export async function apiRequest<T>(
 ): Promise<T> {
   const normalizedPath = path.startsWith("/") ? path : `/${path}`;
   const headers = new Headers(options.headers);
+  const accessToken = getAccessToken();
 
   if (options.body != null && !headers.has("Content-Type")) {
     headers.set("Content-Type", "application/json");
+  }
+
+  if (accessToken && !headers.has("Authorization")) {
+    headers.set("Authorization", `Bearer ${accessToken}`);
   }
 
   const response = await fetch(`${API_BASE_URL}${normalizedPath}`, {

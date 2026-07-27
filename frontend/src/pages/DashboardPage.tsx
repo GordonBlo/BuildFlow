@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 
 import { getHealth, type HealthResponse } from "../api/healthApi";
+import { useAuth } from "../auth/AuthContext";
 
 function DashboardPage() {
+  const { currentUser, logout } = useAuth();
   const [health, setHealth] = useState<HealthResponse | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -42,6 +44,25 @@ function DashboardPage() {
   return (
     <main>
       <h1>Dashboard</h1>
+
+      {currentUser && (
+        <section aria-labelledby="current-user-heading">
+          <h2 id="current-user-heading">Your Account</h2>
+          <dl>
+            <dt>Username</dt>
+            <dd>{currentUser.username}</dd>
+
+            <dt>Email</dt>
+            <dd>{currentUser.email}</dd>
+
+            <dt>Status</dt>
+            <dd>{currentUser.is_active ? "Active" : "Inactive"}</dd>
+          </dl>
+          <button type="button" onClick={logout}>
+            Log out
+          </button>
+        </section>
+      )}
 
       <section aria-labelledby="backend-health-heading">
         <h2 id="backend-health-heading">Backend Health</h2>
