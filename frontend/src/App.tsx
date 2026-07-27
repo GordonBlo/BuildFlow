@@ -1,42 +1,21 @@
-import { useEffect, useState } from "react";
+import { Navigate, Route, Routes } from "react-router";
 
-type HealthResponse = {
-  status: string;
-  message: string;
-};
+import DashboardPage from "./pages/DashboardPage";
+import LoginPage from "./pages/LoginPage";
+import NotFoundPage from "./pages/NotFoundPage";
+import ProjectDetailsPage from "./pages/ProjectDetailsPage";
+import RegisterPage from "./pages/RegisterPage";
 
 function App() {
-  const [apiStatus, setApiStatus] = useState<string>("Checking API connection...");
-
-  useEffect(() => {
-    fetch("http://127.0.0.1:8000/health")
-      .then((response) => response.json())
-      .then((data: HealthResponse) => {
-        setApiStatus(data.message);
-      })
-      .catch(() => {
-        setApiStatus("API connection failed");
-      });
-  }, []);
-
   return (
-    <main style={{ padding: "40px", fontFamily: "Arial, sans-serif" }}>
-      <h1>BuildFlow</h1>
-      <p>Construction Project & Finance Manager</p>
-
-      <section
-        style={{
-          marginTop: "24px",
-          padding: "16px",
-          border: "1px solid #ddd",
-          borderRadius: "8px",
-          maxWidth: "420px",
-        }}
-      >
-        <h2>API Status</h2>
-        <p>{apiStatus}</p>
-      </section>
-    </main>
+    <Routes>
+      <Route path="/" element={<Navigate to="/login" replace />} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
+      <Route path="/dashboard" element={<DashboardPage />} />
+      <Route path="/projects/:projectId" element={<ProjectDetailsPage />} />
+      <Route path="*" element={<NotFoundPage />} />
+    </Routes>
   );
 }
 
