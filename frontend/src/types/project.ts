@@ -23,3 +23,13 @@ export type ProjectCreateRequest = {
   start_date?: string | null;
   deadline?: string | null;
 };
+
+export type ProjectUpdateRequest = {
+  name?: string | null;
+  description?: string | null;
+  client_name?: string | null;
+  status?: ProjectStatus | null;
+  budget?: number | null;
+  start_date?: string | null;
+  deadline?: string | null;
+};
