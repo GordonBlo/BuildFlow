@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router";
 
 import { getHealth, type HealthResponse } from "../api/healthApi";
 import { useAuth } from "../auth/AuthContext";
@@ -44,6 +45,9 @@ function DashboardPage() {
   return (
     <main>
       <h1>Dashboard</h1>
+      <nav aria-label="Project navigation">
+        <Link to="/projects">View Projects</Link>
+      </nav>
 
       {currentUser && (
         <section aria-labelledby="current-user-heading">
