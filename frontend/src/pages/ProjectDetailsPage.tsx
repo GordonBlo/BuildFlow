@@ -8,7 +8,12 @@ import {
   unarchiveProject,
   updateProject,
 } from "../api/projectApi";
-import { createTask, getTasksByProject } from "../api/taskApi";
+import {
+  completeTask,
+  createTask,
+  getTasksByProject,
+  updateTask,
+} from "../api/taskApi";
 import EditProjectForm from "../components/projects/EditProjectForm";
 import CreateTaskForm from "../components/tasks/CreateTaskForm";
 import TaskCard from "../components/tasks/TaskCard";
@@ -16,7 +21,11 @@ import type {
   ProjectResponse,
   ProjectUpdateRequest,
 } from "../types/project";
-import type { TaskCreateRequest, TaskResponse } from "../types/task";
+import type {
+  TaskCreateRequest,
+  TaskResponse,
+  TaskUpdateRequest,
+} from "../types/task";
 
 function formatDate(value: string | null): string {
   if (!value) {
@@ -210,6 +219,39 @@ function ProjectDetailsPage() {
     setTasks((currentTasks) => [createdTask, ...currentTasks]);
   }
 
+  function replaceTask(updatedTask: TaskResponse) {
+    setTasks((currentTasks) =>
+      currentTasks.map((task) =>
+        task.id === updatedTask.id ? updatedTask : task,
+      ),
+    );
+  }
+
+  async function handleTaskUpdate(
+    taskId: number,
+    taskData: TaskUpdateRequest,
+  ) {
+    if (!project || project.is_archived) {
+      throw new Error("Archived Projects are read-only.");
+    }
+
+    const updatedTask = await updateTask(
+      numericProjectId,
+      taskId,
+      taskData,
+    );
+    replaceTask(updatedTask);
+  }
+
+  async function handleTaskComplete(taskId: number) {
+    if (!project || project.is_archived) {
+      throw new Error("Archived Projects are read-only.");
+    }
+
+    const completedTask = await completeTask(numericProjectId, taskId);
+    replaceTask(completedTask);
+  }
+
   if (!isValidProjectId) {
     return (
       <main>
@@ -319,7 +361,12 @@ function ProjectDetailsPage() {
           <ul>
             {tasks.map((task) => (
               <li key={task.id}>
-                <TaskCard task={task} />
+                <TaskCard
+                  task={task}
+                  isProjectArchived={project.is_archived}
+                  onUpdate={handleTaskUpdate}
+                  onComplete={handleTaskComplete}
+                />
               </li>
             ))}
           </ul>

@@ -21,3 +21,11 @@ export type TaskCreateRequest = {
   priority?: TaskPriority;
   due_date?: string | null;
 };
+
+export type TaskUpdateRequest = {
+  title?: string | null;
+  description?: string | null;
+  status?: TaskStatus | null;
+  priority?: TaskPriority | null;
+  due_date?: string | null;
+};
