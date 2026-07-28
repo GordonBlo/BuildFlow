@@ -77,3 +77,18 @@ def archive_project(
     db.commit()
     db.refresh(project)
     return project
+
+
+def unarchive_project(
+    db: Session,
+    project_id: int,
+    owner_id: int
+) -> Project | None:
+    project = db.query(Project).filter(Project.id == project_id, Project.owner_id == owner_id).first()
+    if not project:
+        return None
+
+    project.is_archived = False
+    db.commit()
+    db.refresh(project)
+    return project
