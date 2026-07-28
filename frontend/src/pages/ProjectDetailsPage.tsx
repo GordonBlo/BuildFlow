@@ -5,6 +5,7 @@ import { ApiError } from "../api/apiClient";
 import {
   archiveProject,
   getProjectById,
+  unarchiveProject,
   updateProject,
 } from "../api/projectApi";
 import EditProjectForm from "../components/projects/EditProjectForm";
@@ -32,6 +33,7 @@ function ProjectDetailsPage() {
   const [isNotFound, setIsNotFound] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isArchiving, setIsArchiving] = useState(false);
+  const [isUnarchiving, setIsUnarchiving] = useState(false);
 
   useEffect(() => {
     if (!isValidProjectId) {
@@ -76,6 +78,10 @@ function ProjectDetailsPage() {
   }, [isValidProjectId, numericProjectId]);
 
   async function handleUpdate(projectData: ProjectUpdateRequest) {
+    if (!project || project.is_archived) {
+      throw new Error("Archived Projects are read-only.");
+    }
+
     setErrorMessage(null);
     setSuccessMessage(null);
 
@@ -92,6 +98,34 @@ function ProjectDetailsPage() {
       }
 
       throw error;
+    }
+  }
+
+  async function handleUnarchive() {
+    if (!project || !project.is_archived || isUnarchiving) {
+      return;
+    }
+
+    setErrorMessage(null);
+    setSuccessMessage(null);
+    setIsUnarchiving(true);
+
+    try {
+      const unarchivedProject = await unarchiveProject(numericProjectId);
+      setProject(unarchivedProject);
+      setSuccessMessage("Project unarchived successfully.");
+    } catch (error: unknown) {
+      if (error instanceof ApiError && error.status === 404) {
+        setIsNotFound(true);
+      } else {
+        setErrorMessage(
+          error instanceof Error
+            ? error.message
+            : "Unable to unarchive project.",
+        );
+      }
+    } finally {
+      setIsUnarchiving(false);
     }
   }
 
@@ -204,17 +238,29 @@ function ProjectDetailsPage() {
 
       <section aria-labelledby="edit-project-heading">
         <h2 id="edit-project-heading">Edit Project</h2>
-        <EditProjectForm
-          key={project.id}
-          project={project}
-          onSubmit={handleUpdate}
-        />
+        {project.is_archived ? (
+          <p>This Project is read-only until it is unarchived.</p>
+        ) : (
+          <EditProjectForm
+            key={project.id}
+            project={project}
+            onSubmit={handleUpdate}
+          />
+        )}
       </section>
 
-      <section aria-labelledby="archive-project-heading">
-        <h2 id="archive-project-heading">Archive Project</h2>
+      <section aria-labelledby="project-archive-state-heading">
+        <h2 id="project-archive-state-heading">
+          {project.is_archived ? "Unarchive Project" : "Archive Project"}
+        </h2>
         {project.is_archived ? (
-          <p>This Project is archived.</p>
+          <button
+            type="button"
+            onClick={handleUnarchive}
+            disabled={isUnarchiving}
+          >
+            {isUnarchiving ? "Unarchiving project..." : "Unarchive project"}
+          </button>
         ) : (
           <button type="button" onClick={handleArchive} disabled={isArchiving}>
             {isArchiving ? "Archiving project..." : "Archive project"}

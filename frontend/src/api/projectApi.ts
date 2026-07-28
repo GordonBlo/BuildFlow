@@ -46,3 +46,9 @@ export function archiveProject(projectId: number): Promise<ProjectResponse> {
     method: "PATCH",
   });
 }
+
+export function unarchiveProject(projectId: number): Promise<ProjectResponse> {
+  return apiRequest<ProjectResponse>(`/api/projects/${projectId}/unarchive`, {
+    method: "PATCH",
+  });
+}
