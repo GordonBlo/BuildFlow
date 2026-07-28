@@ -8,11 +8,15 @@ import {
   unarchiveProject,
   updateProject,
 } from "../api/projectApi";
+import { createTask, getTasksByProject } from "../api/taskApi";
 import EditProjectForm from "../components/projects/EditProjectForm";
+import CreateTaskForm from "../components/tasks/CreateTaskForm";
+import TaskCard from "../components/tasks/TaskCard";
 import type {
   ProjectResponse,
   ProjectUpdateRequest,
 } from "../types/project";
+import type { TaskCreateRequest, TaskResponse } from "../types/task";
 
 function formatDate(value: string | null): string {
   if (!value) {
@@ -34,6 +38,9 @@ function ProjectDetailsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isArchiving, setIsArchiving] = useState(false);
   const [isUnarchiving, setIsUnarchiving] = useState(false);
+  const [tasks, setTasks] = useState<TaskResponse[]>([]);
+  const [taskErrorMessage, setTaskErrorMessage] = useState<string | null>(null);
+  const [areTasksLoading, setAreTasksLoading] = useState(true);
 
   useEffect(() => {
     if (!isValidProjectId) {
@@ -71,6 +78,40 @@ function ProjectDetailsPage() {
     }
 
     void loadProject();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [isValidProjectId, numericProjectId]);
+
+  useEffect(() => {
+    if (!isValidProjectId) {
+      return;
+    }
+
+    let isMounted = true;
+
+    async function loadTasks() {
+      try {
+        const response = await getTasksByProject(numericProjectId);
+
+        if (isMounted) {
+          setTasks(response);
+        }
+      } catch (error: unknown) {
+        if (isMounted) {
+          setTaskErrorMessage(
+            error instanceof Error ? error.message : "Unable to load Tasks.",
+          );
+        }
+      } finally {
+        if (isMounted) {
+          setAreTasksLoading(false);
+        }
+      }
+    }
+
+    void loadTasks();
 
     return () => {
       isMounted = false;
@@ -158,6 +199,15 @@ function ProjectDetailsPage() {
     } finally {
       setIsArchiving(false);
     }
+  }
+
+  async function handleCreateTask(taskData: TaskCreateRequest) {
+    if (!project || project.is_archived) {
+      throw new Error("Archived Projects are read-only.");
+    }
+
+    const createdTask = await createTask(numericProjectId, taskData);
+    setTasks((currentTasks) => [createdTask, ...currentTasks]);
   }
 
   if (!isValidProjectId) {
@@ -248,6 +298,40 @@ function ProjectDetailsPage() {
           />
         )}
       </section>
+
+      <section aria-labelledby="project-tasks-heading">
+        <h2 id="project-tasks-heading">Tasks</h2>
+
+        {project.is_archived && (
+          <p>
+            Archived Projects are read-only. Existing Tasks remain available.
+          </p>
+        )}
+
+        {areTasksLoading && <p role="status">Loading Tasks...</p>}
+        {taskErrorMessage && <p role="alert">{taskErrorMessage}</p>}
+
+        {!areTasksLoading && !taskErrorMessage && tasks.length === 0 && (
+          <p>This Project does not have any Tasks yet.</p>
+        )}
+
+        {!areTasksLoading && tasks.length > 0 && (
+          <ul>
+            {tasks.map((task) => (
+              <li key={task.id}>
+                <TaskCard task={task} />
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      {!project.is_archived && (
+        <section aria-labelledby="create-task-heading">
+          <h2 id="create-task-heading">Create Task</h2>
+          <CreateTaskForm onSubmit={handleCreateTask} />
+        </section>
+      )}
 
       <section aria-labelledby="project-archive-state-heading">
         <h2 id="project-archive-state-heading">
