@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.database import Base, engine
 from app.routes.auth_routes import router as auth_router
+from app.routes.dashboard_routes import router as dashboard_router
 from app.routes.health_routes import router as health_router
 from app.routes.project_routes import router as project_router
 from app.routes.task_routes import router as task_router
@@ -45,5 +46,6 @@ def root():
 
 app.include_router(health_router)
 app.include_router(auth_router)
+app.include_router(dashboard_router)
 app.include_router(project_router)
 app.include_router(task_router)
