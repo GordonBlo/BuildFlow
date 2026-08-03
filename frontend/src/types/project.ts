@@ -1,4 +1,13 @@
-export type ProjectStatus = string;
+export type ProjectStatus = "planned" | "active" | "completed";
+
+export const PROJECT_STATUS_OPTIONS: readonly {
+  value: ProjectStatus;
+  label: string;
+}[] = [
+  { value: "planned", label: "Planned" },
+  { value: "active", label: "Active" },
+  { value: "completed", label: "Completed" },
+];
 
 export type ProjectResponse = {
   id: number;

@@ -1,6 +1,10 @@
 import { useState, type FormEvent } from "react";
 
-import type { ProjectCreateRequest } from "../../types/project";
+import {
+  PROJECT_STATUS_OPTIONS,
+  type ProjectCreateRequest,
+  type ProjectStatus,
+} from "../../types/project";
 
 type CreateProjectFormProps = {
   onSubmit: (projectData: ProjectCreateRequest) => Promise<void>;
@@ -10,7 +14,7 @@ function CreateProjectForm({ onSubmit }: CreateProjectFormProps) {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [clientName, setClientName] = useState("");
-  const [status, setStatus] = useState("planned");
+  const [status, setStatus] = useState<ProjectStatus>("planned");
   const [budget, setBudget] = useState("0");
   const [startDate, setStartDate] = useState("");
   const [deadline, setDeadline] = useState("");
@@ -48,15 +52,11 @@ function CreateProjectForm({ onSubmit }: CreateProjectFormProps) {
       name: normalizedName,
       description: description.trim() || null,
       client_name: clientName.trim() || null,
+      status,
       budget: numericBudget,
       start_date: startDate || null,
       deadline: deadline || null,
     };
-    const normalizedStatus = status.trim();
-
-    if (normalizedStatus) {
-      projectData.status = normalizedStatus;
-    }
 
     setIsSubmitting(true);
 
@@ -113,14 +113,21 @@ function CreateProjectForm({ onSubmit }: CreateProjectFormProps) {
 
       <div className="form-field">
         <label htmlFor="project-status">Status</label>
-        <input
+        <select
           id="project-status"
           name="status"
-          type="text"
-          maxLength={50}
           value={status}
-          onChange={(event) => setStatus(event.target.value)}
-        />
+          onChange={(event) =>
+            setStatus(event.target.value as ProjectStatus)
+          }
+          required
+        >
+          {PROJECT_STATUS_OPTIONS.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div className="form-field">

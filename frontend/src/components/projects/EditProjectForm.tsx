@@ -1,8 +1,10 @@
 import { useState, type FormEvent } from "react";
 
-import type {
-  ProjectResponse,
-  ProjectUpdateRequest,
+import {
+  PROJECT_STATUS_OPTIONS,
+  type ProjectResponse,
+  type ProjectStatus,
+  type ProjectUpdateRequest,
 } from "../../types/project";
 
 type EditProjectFormProps = {
@@ -14,7 +16,7 @@ function EditProjectForm({ project, onSubmit }: EditProjectFormProps) {
   const [name, setName] = useState(project.name);
   const [description, setDescription] = useState(project.description ?? "");
   const [clientName, setClientName] = useState(project.client_name ?? "");
-  const [status, setStatus] = useState(project.status);
+  const [status, setStatus] = useState<ProjectStatus>(project.status);
   const [budget, setBudget] = useState(String(project.budget));
   const [startDate, setStartDate] = useState(project.start_date ?? "");
   const [deadline, setDeadline] = useState(project.deadline ?? "");
@@ -29,18 +31,12 @@ function EditProjectForm({ project, onSubmit }: EditProjectFormProps) {
     const normalizedName = name.trim();
     const normalizedDescription = description.trim() || null;
     const normalizedClientName = clientName.trim() || null;
-    const normalizedStatus = status.trim();
     const numericBudget = Number(budget);
     const normalizedStartDate = startDate || null;
     const normalizedDeadline = deadline || null;
 
     if (normalizedName.length < 2) {
       setErrorMessage("Project name must contain at least 2 characters.");
-      return;
-    }
-
-    if (!normalizedStatus) {
-      setErrorMessage("Project status is required.");
       return;
     }
 
@@ -65,8 +61,8 @@ function EditProjectForm({ project, onSubmit }: EditProjectFormProps) {
       projectData.client_name = normalizedClientName;
     }
 
-    if (normalizedStatus !== project.status) {
-      projectData.status = normalizedStatus;
+    if (status !== project.status) {
+      projectData.status = status;
     }
 
     if (numericBudget !== project.budget) {
@@ -140,15 +136,21 @@ function EditProjectForm({ project, onSubmit }: EditProjectFormProps) {
 
       <div className="form-field">
         <label htmlFor="edit-project-status">Status</label>
-        <input
+        <select
           id="edit-project-status"
           name="status"
-          type="text"
-          maxLength={50}
           value={status}
-          onChange={(event) => setStatus(event.target.value)}
+          onChange={(event) =>
+            setStatus(event.target.value as ProjectStatus)
+          }
           required
-        />
+        >
+          {PROJECT_STATUS_OPTIONS.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div className="form-field">
