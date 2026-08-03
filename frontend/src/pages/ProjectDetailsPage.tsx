@@ -254,84 +254,137 @@ function ProjectDetailsPage() {
 
   if (!isValidProjectId) {
     return (
-      <main>
-        <h1>Project Details</h1>
-        <p role="alert">The Project ID must be a positive integer.</p>
-        <Link to="/projects">Back to Projects</Link>
-      </main>
+      <div className="page state-page">
+        <div className="panel state-card">
+          <p className="eyebrow">Invalid request</p>
+          <h1>Project details</h1>
+          <p role="alert">The Project ID must be a positive integer.</p>
+          <Link className="button button--secondary" to="/projects">
+            Back to projects
+          </Link>
+        </div>
+      </div>
     );
   }
 
   if (isLoading) {
     return (
-      <main>
-        <h1>Project Details</h1>
-        <p role="status">Loading project...</p>
-        <Link to="/projects">Back to Projects</Link>
-      </main>
+      <div className="page state-page">
+        <div className="panel state-card">
+          <p className="eyebrow">Project workspace</p>
+          <h1>Project details</h1>
+          <p role="status">Loading project...</p>
+          <Link className="text-link" to="/projects">
+            Back to projects
+          </Link>
+        </div>
+      </div>
     );
   }
 
   if (isNotFound) {
     return (
-      <main>
-        <h1>Project Not Found</h1>
-        <p>The requested Project could not be found.</p>
-        <Link to="/projects">Back to Projects</Link>
-      </main>
+      <div className="page state-page">
+        <div className="panel state-card">
+          <p className="eyebrow">404 error</p>
+          <h1>Project not found</h1>
+          <p>The requested Project could not be found.</p>
+          <Link className="button button--secondary" to="/projects">
+            Back to projects
+          </Link>
+        </div>
+      </div>
     );
   }
 
   if (errorMessage || !project) {
     return (
-      <main>
-        <h1>Project Details</h1>
-        <p role="alert">{errorMessage ?? "Unable to load project."}</p>
-        <Link to="/projects">Back to Projects</Link>
-      </main>
+      <div className="page state-page">
+        <div className="panel state-card">
+          <p className="eyebrow">Unable to load</p>
+          <h1>Project details</h1>
+          <p role="alert">{errorMessage ?? "Unable to load project."}</p>
+          <Link className="button button--secondary" to="/projects">
+            Back to projects
+          </Link>
+        </div>
+      </div>
     );
   }
 
   return (
-    <main>
-      <header>
-        <h1>{project.name}</h1>
-        <p>{project.is_archived ? "Archived Project" : "Active Project"}</p>
-        <Link to="/projects">Back to Projects</Link>
+    <div className="page project-details-page">
+      <header className="page-header project-page-header">
+        <div>
+          <Link className="breadcrumb" to="/projects">
+            <span aria-hidden="true">&larr;</span> Projects
+          </Link>
+          <p className="eyebrow">Project details</p>
+          <h1>{project.name}</h1>
+          <p className="page-header__description">
+            {project.description ?? "No project description has been added."}
+          </p>
+        </div>
+        <span
+          className={`badge badge--large ${
+            project.is_archived ? "badge--neutral" : "badge--success"
+          }`}
+        >
+          {project.is_archived ? "Archived project" : "Active project"}
+        </span>
       </header>
 
       {successMessage && <p role="status">{successMessage}</p>}
       {errorMessage && <p role="alert">{errorMessage}</p>}
 
-      <section aria-labelledby="project-information-heading">
-        <h2 id="project-information-heading">Project Information</h2>
-        {project.description && <p>{project.description}</p>}
+      <section className="panel" aria-labelledby="project-information-heading">
+        <div className="section-heading">
+          <div>
+            <p className="eyebrow">Snapshot</p>
+            <h2 id="project-information-heading">Project information</h2>
+          </div>
+          <span className="badge badge--outline">{project.status}</span>
+        </div>
 
-        <dl>
-          <dt>Client</dt>
-          <dd>{project.client_name ?? "Not set"}</dd>
-
-          <dt>Status</dt>
-          <dd>{project.status}</dd>
-
-          <dt>Budget</dt>
-          <dd>{project.budget.toLocaleString()}</dd>
-
-          <dt>Start date</dt>
-          <dd>{formatDate(project.start_date)}</dd>
-
-          <dt>Deadline</dt>
-          <dd>{formatDate(project.deadline)}</dd>
-
-          <dt>Created</dt>
-          <dd>{new Date(project.created_at).toLocaleString()}</dd>
+        <dl className="detail-grid">
+          <div>
+            <dt>Client</dt>
+            <dd>{project.client_name ?? "Not set"}</dd>
+          </div>
+          <div>
+            <dt>Status</dt>
+            <dd>{project.status}</dd>
+          </div>
+          <div>
+            <dt>Budget</dt>
+            <dd>{project.budget.toLocaleString()}</dd>
+          </div>
+          <div>
+            <dt>Start date</dt>
+            <dd>{formatDate(project.start_date)}</dd>
+          </div>
+          <div>
+            <dt>Deadline</dt>
+            <dd>{formatDate(project.deadline)}</dd>
+          </div>
+          <div>
+            <dt>Created</dt>
+            <dd>{new Date(project.created_at).toLocaleString()}</dd>
+          </div>
         </dl>
       </section>
 
-      <section aria-labelledby="edit-project-heading">
-        <h2 id="edit-project-heading">Edit Project</h2>
+      <section className="panel" aria-labelledby="edit-project-heading">
+        <div className="section-heading">
+          <div>
+            <p className="eyebrow">Project setup</p>
+            <h2 id="edit-project-heading">Edit project</h2>
+          </div>
+        </div>
         {project.is_archived ? (
-          <p>This Project is read-only until it is unarchived.</p>
+          <p className="read-only-notice">
+            This Project is read-only until it is unarchived.
+          </p>
         ) : (
           <EditProjectForm
             key={project.id}
@@ -341,11 +394,21 @@ function ProjectDetailsPage() {
         )}
       </section>
 
-      <section aria-labelledby="project-tasks-heading">
-        <h2 id="project-tasks-heading">Tasks</h2>
+      <section className="page-section" aria-labelledby="project-tasks-heading">
+        <div className="section-heading">
+          <div>
+            <p className="eyebrow">Work plan</p>
+            <h2 id="project-tasks-heading">Tasks</h2>
+          </div>
+          {!areTasksLoading && !taskErrorMessage && (
+            <span className="record-count">
+              {tasks.length} {tasks.length === 1 ? "task" : "tasks"}
+            </span>
+          )}
+        </div>
 
         {project.is_archived && (
-          <p>
+          <p className="read-only-notice">
             Archived Projects are read-only. Existing Tasks remain available.
           </p>
         )}
@@ -354,11 +417,14 @@ function ProjectDetailsPage() {
         {taskErrorMessage && <p role="alert">{taskErrorMessage}</p>}
 
         {!areTasksLoading && !taskErrorMessage && tasks.length === 0 && (
-          <p>This Project does not have any Tasks yet.</p>
+          <div className="empty-state">
+            <h3>No tasks yet</h3>
+            <p>This Project does not have any Tasks yet.</p>
+          </div>
         )}
 
         {!areTasksLoading && tasks.length > 0 && (
-          <ul>
+          <ul className="task-list">
             {tasks.map((task) => (
               <li key={task.id}>
                 <TaskCard
@@ -374,18 +440,35 @@ function ProjectDetailsPage() {
       </section>
 
       {!project.is_archived && (
-        <section aria-labelledby="create-task-heading">
-          <h2 id="create-task-heading">Create Task</h2>
+        <section className="panel" aria-labelledby="create-task-heading">
+          <div className="section-heading">
+            <div>
+              <p className="eyebrow">Add work</p>
+              <h2 id="create-task-heading">Create task</h2>
+            </div>
+          </div>
           <CreateTaskForm onSubmit={handleCreateTask} />
         </section>
       )}
 
-      <section aria-labelledby="project-archive-state-heading">
-        <h2 id="project-archive-state-heading">
-          {project.is_archived ? "Unarchive Project" : "Archive Project"}
-        </h2>
+      <section
+        className="panel archive-panel"
+        aria-labelledby="project-archive-state-heading"
+      >
+        <div>
+          <p className="eyebrow">Project access</p>
+          <h2 id="project-archive-state-heading">
+            {project.is_archived ? "Unarchive project" : "Archive project"}
+          </h2>
+          <p>
+            {project.is_archived
+              ? "Restore editing and task management for this project."
+              : "Make this project read-only while keeping its history available."}
+          </p>
+        </div>
         {project.is_archived ? (
           <button
+            className="button button--secondary"
             type="button"
             onClick={handleUnarchive}
             disabled={isUnarchiving}
@@ -393,12 +476,17 @@ function ProjectDetailsPage() {
             {isUnarchiving ? "Unarchiving project..." : "Unarchive project"}
           </button>
         ) : (
-          <button type="button" onClick={handleArchive} disabled={isArchiving}>
+          <button
+            className="button button--danger"
+            type="button"
+            onClick={handleArchive}
+            disabled={isArchiving}
+          >
             {isArchiving ? "Archiving project..." : "Archive project"}
           </button>
         )}
       </section>
-    </main>
+    </div>
   );
 }
 

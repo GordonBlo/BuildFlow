@@ -16,32 +16,52 @@ function formatDate(value: string | null): string {
 
 function ProjectCard({ project }: ProjectCardProps) {
   return (
-    <article>
-      <header>
+    <article className="project-card">
+      <header className="project-card__header">
         <h2>
           <Link to={`/projects/${project.id}`}>{project.name}</Link>
         </h2>
-        <p>{project.is_archived ? "Archived" : "Active"}</p>
+        <span
+          className={`badge ${
+            project.is_archived ? "badge--neutral" : "badge--success"
+          }`}
+        >
+          {project.is_archived ? "Archived" : "Active"}
+        </span>
       </header>
 
-      {project.description && <p>{project.description}</p>}
+      {project.description && (
+        <p className="project-card__description">{project.description}</p>
+      )}
 
-      <dl>
-        <dt>Client</dt>
-        <dd>{project.client_name ?? "Not set"}</dd>
-
-        <dt>Status</dt>
-        <dd>{project.status}</dd>
-
-        <dt>Budget</dt>
-        <dd>{project.budget.toLocaleString()}</dd>
-
-        <dt>Start date</dt>
-        <dd>{formatDate(project.start_date)}</dd>
-
-        <dt>Deadline</dt>
-        <dd>{formatDate(project.deadline)}</dd>
+      <dl className="card-details">
+        <div>
+          <dt>Client</dt>
+          <dd>{project.client_name ?? "Not set"}</dd>
+        </div>
+        <div>
+          <dt>Status</dt>
+          <dd>
+            <span className="badge badge--outline">{project.status}</span>
+          </dd>
+        </div>
+        <div>
+          <dt>Budget</dt>
+          <dd>{project.budget.toLocaleString()}</dd>
+        </div>
+        <div>
+          <dt>Start date</dt>
+          <dd>{formatDate(project.start_date)}</dd>
+        </div>
+        <div>
+          <dt>Deadline</dt>
+          <dd>{formatDate(project.deadline)}</dd>
+        </div>
       </dl>
+
+      <Link className="project-card__link" to={`/projects/${project.id}`}>
+        View project <span aria-hidden="true">→</span>
+      </Link>
     </article>
   );
 }

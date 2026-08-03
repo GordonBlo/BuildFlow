@@ -61,8 +61,8 @@ function CreateTaskForm({ onSubmit }: CreateTaskFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div>
+    <form className="form-grid form-grid--two-columns" onSubmit={handleSubmit}>
+      <div className="form-field form-field--wide">
         <label htmlFor="task-title">Title</label>
         <input
           id="task-title"
@@ -76,7 +76,7 @@ function CreateTaskForm({ onSubmit }: CreateTaskFormProps) {
         />
       </div>
 
-      <div>
+      <div className="form-field form-field--wide">
         <label htmlFor="task-description">Description</label>
         <textarea
           id="task-description"
@@ -87,7 +87,7 @@ function CreateTaskForm({ onSubmit }: CreateTaskFormProps) {
         />
       </div>
 
-      <div>
+      <div className="form-field">
         <label htmlFor="task-status">Status</label>
         <select
           id="task-status"
@@ -101,7 +101,7 @@ function CreateTaskForm({ onSubmit }: CreateTaskFormProps) {
         </select>
       </div>
 
-      <div>
+      <div className="form-field">
         <label htmlFor="task-priority">Priority</label>
         <select
           id="task-priority"
@@ -115,7 +115,7 @@ function CreateTaskForm({ onSubmit }: CreateTaskFormProps) {
         </select>
       </div>
 
-      <div>
+      <div className="form-field">
         <label htmlFor="task-due-date">Due date</label>
         <input
           id="task-due-date"
@@ -126,11 +126,13 @@ function CreateTaskForm({ onSubmit }: CreateTaskFormProps) {
         />
       </div>
 
-      {errorMessage && <p role="alert">{errorMessage}</p>}
+      {errorMessage && <p className="form-message" role="alert">{errorMessage}</p>}
 
-      <button type="submit" disabled={isSubmitting}>
-        {isSubmitting ? "Creating Task..." : "Create Task"}
-      </button>
+      <div className="form-actions form-field--wide">
+        <button className="button" type="submit" disabled={isSubmitting}>
+          {isSubmitting ? "Creating Task..." : "Create Task"}
+        </button>
+      </div>
     </form>
   );
 }

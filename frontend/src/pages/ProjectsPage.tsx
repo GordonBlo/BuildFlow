@@ -52,29 +52,55 @@ function ProjectsPage() {
   }
 
   return (
-    <main>
-      <header>
-        <h1>Projects</h1>
-        <Link to="/dashboard">Back to Dashboard</Link>
+    <div className="page projects-page">
+      <header className="page-header">
+        <div>
+          <p className="eyebrow">Workspace</p>
+          <h1>Projects</h1>
+          <p className="page-header__description">
+            Create, review, and manage every active build in one place.
+          </p>
+        </div>
+        <Link className="text-link" to="/dashboard">
+          Back to dashboard
+        </Link>
       </header>
 
-      <section aria-labelledby="create-project-heading">
-        <h2 id="create-project-heading">Create Project</h2>
+      <section className="panel" aria-labelledby="create-project-heading">
+        <div className="section-heading">
+          <div>
+            <p className="eyebrow">New work</p>
+            <h2 id="create-project-heading">Create project</h2>
+          </div>
+        </div>
         <CreateProjectForm onSubmit={handleCreateProject} />
       </section>
 
-      <section aria-labelledby="project-list-heading">
-        <h2 id="project-list-heading">Your Projects</h2>
+      <section className="page-section" aria-labelledby="project-list-heading">
+        <div className="section-heading">
+          <div>
+            <p className="eyebrow">Portfolio</p>
+            <h2 id="project-list-heading">Your projects</h2>
+          </div>
+          {!isLoading && !errorMessage && (
+            <span className="record-count">
+              {projects.length} {projects.length === 1 ? "project" : "projects"}
+            </span>
+          )}
+        </div>
 
         {isLoading && <p role="status">Loading projects...</p>}
         {errorMessage && <p role="alert">{errorMessage}</p>}
 
         {!isLoading && !errorMessage && projects.length === 0 && (
-          <p>You do not have any active projects yet.</p>
+          <div className="empty-state">
+            <h3>No active projects yet</h3>
+            <p>Create your first project above to start organizing the work.</p>
+          </div>
         )}
 
         {!isLoading && projects.length > 0 && (
-          <ul>
+          <ul className="card-grid project-list">
             {projects.map((project) => (
               <li key={project.id}>
                 <ProjectCard project={project} />
@@ -83,7 +109,7 @@ function ProjectsPage() {
           </ul>
         )}
       </section>
-    </main>
+    </div>
   );
 }
 

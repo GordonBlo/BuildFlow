@@ -75,11 +75,11 @@ function EditTaskForm({ task, onSubmit, onCancel }: EditTaskFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form className="form-grid" onSubmit={handleSubmit}>
       <fieldset disabled={isSubmitting}>
         <legend>Edit Task</legend>
 
-        <div>
+        <div className="form-field">
           <label htmlFor={`edit-task-title-${task.id}`}>Title</label>
           <input
             id={`edit-task-title-${task.id}`}
@@ -93,7 +93,7 @@ function EditTaskForm({ task, onSubmit, onCancel }: EditTaskFormProps) {
           />
         </div>
 
-        <div>
+        <div className="form-field">
           <label htmlFor={`edit-task-description-${task.id}`}>
             Description
           </label>
@@ -106,7 +106,7 @@ function EditTaskForm({ task, onSubmit, onCancel }: EditTaskFormProps) {
           />
         </div>
 
-        <div>
+        <div className="form-field">
           <label htmlFor={`edit-task-status-${task.id}`}>Status</label>
           <select
             id={`edit-task-status-${task.id}`}
@@ -120,7 +120,7 @@ function EditTaskForm({ task, onSubmit, onCancel }: EditTaskFormProps) {
           </select>
         </div>
 
-        <div>
+        <div className="form-field">
           <label htmlFor={`edit-task-priority-${task.id}`}>Priority</label>
           <select
             id={`edit-task-priority-${task.id}`}
@@ -136,7 +136,7 @@ function EditTaskForm({ task, onSubmit, onCancel }: EditTaskFormProps) {
           </select>
         </div>
 
-        <div>
+        <div className="form-field">
           <label htmlFor={`edit-task-due-date-${task.id}`}>Due date</label>
           <input
             id={`edit-task-due-date-${task.id}`}
@@ -147,14 +147,21 @@ function EditTaskForm({ task, onSubmit, onCancel }: EditTaskFormProps) {
           />
         </div>
 
-        {errorMessage && <p role="alert">{errorMessage}</p>}
+        {errorMessage && <p className="form-message" role="alert">{errorMessage}</p>}
 
-        <button type="button" onClick={onCancel} disabled={isSubmitting}>
-          Cancel
-        </button>
-        <button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Saving Task..." : "Save"}
-        </button>
+        <div className="form-actions">
+          <button
+            className="button button--secondary"
+            type="button"
+            onClick={onCancel}
+            disabled={isSubmitting}
+          >
+            Cancel
+          </button>
+          <button className="button" type="submit" disabled={isSubmitting}>
+            {isSubmitting ? "Saving Task..." : "Save"}
+          </button>
+        </div>
       </fieldset>
     </form>
   );

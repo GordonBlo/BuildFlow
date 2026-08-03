@@ -29,49 +29,64 @@ function LoginPage() {
   }
 
   return (
-    <main>
-      <h1>Login</h1>
-      <p>Sign in to continue to BuildFlow.</p>
-
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="login-email">Email</label>
-          <input
-            id="login-email"
-            name="email"
-            type="email"
-            autoComplete="email"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-            required
-          />
+    <main className="auth-page">
+      <section className="auth-card" aria-labelledby="login-heading">
+        <div className="auth-brand">
+          <span className="brand__mark" aria-hidden="true">
+            BF
+          </span>
+          <span className="brand__name">BuildFlow</span>
         </div>
+        <header className="auth-card__header">
+          <p className="eyebrow">Welcome back</p>
+          <h1 id="login-heading">Sign in</h1>
+          <p>Continue to your project workspace.</p>
+        </header>
 
-        <div>
-          <label htmlFor="login-password">Password</label>
-          <input
-            id="login-password"
-            name="password"
-            type="password"
-            autoComplete="current-password"
-            minLength={8}
-            maxLength={128}
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-            required
-          />
-        </div>
+        <form className="form-grid" onSubmit={handleSubmit}>
+          <div className="form-field">
+            <label htmlFor="login-email">Email</label>
+            <input
+              id="login-email"
+              name="email"
+              type="email"
+              autoComplete="email"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              required
+            />
+          </div>
 
-        {errorMessage && <p role="alert">{errorMessage}</p>}
+          <div className="form-field">
+            <label htmlFor="login-password">Password</label>
+            <input
+              id="login-password"
+              name="password"
+              type="password"
+              autoComplete="current-password"
+              minLength={8}
+              maxLength={128}
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              required
+            />
+          </div>
 
-        <button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Signing in..." : "Sign in"}
-        </button>
-      </form>
+          {errorMessage && <p role="alert">{errorMessage}</p>}
 
-      <p>
-        Need an account? <Link to="/register">Register</Link>
-      </p>
+          <button
+            className="button button--full"
+            type="submit"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "Signing in..." : "Sign in"}
+          </button>
+        </form>
+
+        <p className="auth-card__footer">
+          Need an account? <Link to="/register">Create one</Link>
+        </p>
+      </section>
     </main>
   );
 }

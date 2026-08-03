@@ -30,64 +30,79 @@ function RegisterPage() {
   }
 
   return (
-    <main>
-      <h1>Register</h1>
-      <p>Create your BuildFlow account.</p>
-
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="register-username">Username</label>
-          <input
-            id="register-username"
-            name="username"
-            type="text"
-            autoComplete="username"
-            minLength={2}
-            maxLength={80}
-            value={username}
-            onChange={(event) => setUsername(event.target.value)}
-            required
-          />
+    <main className="auth-page">
+      <section className="auth-card" aria-labelledby="register-heading">
+        <div className="auth-brand">
+          <span className="brand__mark" aria-hidden="true">
+            BF
+          </span>
+          <span className="brand__name">BuildFlow</span>
         </div>
+        <header className="auth-card__header">
+          <p className="eyebrow">Get started</p>
+          <h1 id="register-heading">Create your account</h1>
+          <p>Bring your projects and tasks into one clear workspace.</p>
+        </header>
 
-        <div>
-          <label htmlFor="register-email">Email</label>
-          <input
-            id="register-email"
-            name="email"
-            type="email"
-            autoComplete="email"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-            required
-          />
-        </div>
+        <form className="form-grid" onSubmit={handleSubmit}>
+          <div className="form-field">
+            <label htmlFor="register-username">Username</label>
+            <input
+              id="register-username"
+              name="username"
+              type="text"
+              autoComplete="username"
+              minLength={2}
+              maxLength={80}
+              value={username}
+              onChange={(event) => setUsername(event.target.value)}
+              required
+            />
+          </div>
 
-        <div>
-          <label htmlFor="register-password">Password</label>
-          <input
-            id="register-password"
-            name="password"
-            type="password"
-            autoComplete="new-password"
-            minLength={8}
-            maxLength={128}
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-            required
-          />
-        </div>
+          <div className="form-field">
+            <label htmlFor="register-email">Email</label>
+            <input
+              id="register-email"
+              name="email"
+              type="email"
+              autoComplete="email"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              required
+            />
+          </div>
 
-        {errorMessage && <p role="alert">{errorMessage}</p>}
+          <div className="form-field">
+            <label htmlFor="register-password">Password</label>
+            <input
+              id="register-password"
+              name="password"
+              type="password"
+              autoComplete="new-password"
+              minLength={8}
+              maxLength={128}
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              required
+            />
+          </div>
 
-        <button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Creating account..." : "Create account"}
-        </button>
-      </form>
+          {errorMessage && <p role="alert">{errorMessage}</p>}
 
-      <p>
-        Already registered? <Link to="/login">Sign in</Link>
-      </p>
+          <button
+            className="button button--full"
+            type="submit"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "Creating account..." : "Create account"}
+          </button>
+        </form>
+
+        <p className="auth-card__footer">
+          Already registered? <Link to="/login">Sign in</Link>
+        </p>
+      </section>
     </main>
   );
 }

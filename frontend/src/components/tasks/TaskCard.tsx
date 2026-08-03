@@ -50,7 +50,7 @@ function TaskCard({
 
   if (isEditing && !isProjectArchived) {
     return (
-      <article>
+      <article className="task-card task-card--editing">
         <EditTaskForm
           task={task}
           onSubmit={handleUpdate}
@@ -61,33 +61,38 @@ function TaskCard({
   }
 
   return (
-    <article>
-      <header>
+    <article className="task-card">
+      <header className="task-card__header">
         <h3>{task.title}</h3>
+        <div className="badge-group" aria-label="Task classification">
+          <span className={`badge badge--${task.status.replace("_", "-")}`}>
+            {task.status.replace("_", " ")}
+          </span>
+          <span className={`badge badge--priority-${task.priority}`}>
+            {task.priority} priority
+          </span>
+        </div>
       </header>
 
-      {task.description && <p>{task.description}</p>}
+      {task.description && (
+        <p className="task-card__description">{task.description}</p>
+      )}
 
-      <dl>
-        <dt>Status</dt>
-        <dd>{task.status}</dd>
-
-        <dt>Priority</dt>
-        <dd>{task.priority}</dd>
-
-        {task.due_date && (
-          <>
+      {task.due_date && (
+        <dl className="task-meta">
+          <div>
             <dt>Due date</dt>
             <dd>{formatDueDate(task.due_date)}</dd>
-          </>
-        )}
-      </dl>
+          </div>
+        </dl>
+      )}
 
       {errorMessage && <p role="alert">{errorMessage}</p>}
 
       {!isProjectArchived && (
-        <footer>
+        <footer className="task-card__actions">
           <button
+            className="button button--secondary button--compact"
             type="button"
             onClick={() => {
               setErrorMessage(null);
@@ -100,6 +105,7 @@ function TaskCard({
 
           {task.status !== "done" && (
             <button
+              className="button button--compact"
               type="button"
               onClick={handleComplete}
               disabled={isCompleting}

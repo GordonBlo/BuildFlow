@@ -73,8 +73,8 @@ function CreateProjectForm({ onSubmit }: CreateProjectFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div>
+    <form className="form-grid form-grid--two-columns" onSubmit={handleSubmit}>
+      <div className="form-field form-field--wide">
         <label htmlFor="project-name">Project name</label>
         <input
           id="project-name"
@@ -88,7 +88,7 @@ function CreateProjectForm({ onSubmit }: CreateProjectFormProps) {
         />
       </div>
 
-      <div>
+      <div className="form-field form-field--wide">
         <label htmlFor="project-description">Description</label>
         <textarea
           id="project-description"
@@ -99,7 +99,7 @@ function CreateProjectForm({ onSubmit }: CreateProjectFormProps) {
         />
       </div>
 
-      <div>
+      <div className="form-field">
         <label htmlFor="project-client-name">Client name</label>
         <input
           id="project-client-name"
@@ -111,7 +111,7 @@ function CreateProjectForm({ onSubmit }: CreateProjectFormProps) {
         />
       </div>
 
-      <div>
+      <div className="form-field">
         <label htmlFor="project-status">Status</label>
         <input
           id="project-status"
@@ -123,7 +123,7 @@ function CreateProjectForm({ onSubmit }: CreateProjectFormProps) {
         />
       </div>
 
-      <div>
+      <div className="form-field">
         <label htmlFor="project-budget">Budget</label>
         <input
           id="project-budget"
@@ -137,7 +137,7 @@ function CreateProjectForm({ onSubmit }: CreateProjectFormProps) {
         />
       </div>
 
-      <div>
+      <div className="form-field">
         <label htmlFor="project-start-date">Start date</label>
         <input
           id="project-start-date"
@@ -148,7 +148,7 @@ function CreateProjectForm({ onSubmit }: CreateProjectFormProps) {
         />
       </div>
 
-      <div>
+      <div className="form-field">
         <label htmlFor="project-deadline">Deadline</label>
         <input
           id="project-deadline"
@@ -159,11 +159,13 @@ function CreateProjectForm({ onSubmit }: CreateProjectFormProps) {
         />
       </div>
 
-      {errorMessage && <p role="alert">{errorMessage}</p>}
+      {errorMessage && <p className="form-message" role="alert">{errorMessage}</p>}
 
-      <button type="submit" disabled={isSubmitting}>
-        {isSubmitting ? "Creating project..." : "Create project"}
-      </button>
+      <div className="form-actions form-field--wide">
+        <button className="button" type="submit" disabled={isSubmitting}>
+          {isSubmitting ? "Creating project..." : "Create project"}
+        </button>
+      </div>
     </form>
   );
 }

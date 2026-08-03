@@ -100,8 +100,8 @@ function EditProjectForm({ project, onSubmit }: EditProjectFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div>
+    <form className="form-grid form-grid--two-columns" onSubmit={handleSubmit}>
+      <div className="form-field form-field--wide">
         <label htmlFor="edit-project-name">Project name</label>
         <input
           id="edit-project-name"
@@ -115,7 +115,7 @@ function EditProjectForm({ project, onSubmit }: EditProjectFormProps) {
         />
       </div>
 
-      <div>
+      <div className="form-field form-field--wide">
         <label htmlFor="edit-project-description">Description</label>
         <textarea
           id="edit-project-description"
@@ -126,7 +126,7 @@ function EditProjectForm({ project, onSubmit }: EditProjectFormProps) {
         />
       </div>
 
-      <div>
+      <div className="form-field">
         <label htmlFor="edit-project-client-name">Client name</label>
         <input
           id="edit-project-client-name"
@@ -138,7 +138,7 @@ function EditProjectForm({ project, onSubmit }: EditProjectFormProps) {
         />
       </div>
 
-      <div>
+      <div className="form-field">
         <label htmlFor="edit-project-status">Status</label>
         <input
           id="edit-project-status"
@@ -151,7 +151,7 @@ function EditProjectForm({ project, onSubmit }: EditProjectFormProps) {
         />
       </div>
 
-      <div>
+      <div className="form-field">
         <label htmlFor="edit-project-budget">Budget</label>
         <input
           id="edit-project-budget"
@@ -165,7 +165,7 @@ function EditProjectForm({ project, onSubmit }: EditProjectFormProps) {
         />
       </div>
 
-      <div>
+      <div className="form-field">
         <label htmlFor="edit-project-start-date">Start date</label>
         <input
           id="edit-project-start-date"
@@ -176,7 +176,7 @@ function EditProjectForm({ project, onSubmit }: EditProjectFormProps) {
         />
       </div>
 
-      <div>
+      <div className="form-field">
         <label htmlFor="edit-project-deadline">Deadline</label>
         <input
           id="edit-project-deadline"
@@ -187,11 +187,13 @@ function EditProjectForm({ project, onSubmit }: EditProjectFormProps) {
         />
       </div>
 
-      {errorMessage && <p role="alert">{errorMessage}</p>}
+      {errorMessage && <p className="form-message" role="alert">{errorMessage}</p>}
 
-      <button type="submit" disabled={isSubmitting}>
-        {isSubmitting ? "Saving project..." : "Save changes"}
-      </button>
+      <div className="form-actions form-field--wide">
+        <button className="button" type="submit" disabled={isSubmitting}>
+          {isSubmitting ? "Saving project..." : "Save changes"}
+        </button>
+      </div>
     </form>
   );
 }

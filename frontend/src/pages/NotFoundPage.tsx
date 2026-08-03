@@ -1,8 +1,12 @@
 function NotFoundPage() {
   return (
-    <main>
-      <h1>Page Not Found</h1>
+    <main className="standalone-page">
+      <p className="eyebrow">404 error</p>
+      <h1>Page not found</h1>
       <p>The requested page could not be found.</p>
+      <a className="button" href="/">
+        Return to BuildFlow
+      </a>
     </main>
   );
 }
