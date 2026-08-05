@@ -1,283 +1,210 @@
-# BuildFlow
+# BuildFlow v1.0.0
 
-**BuildFlow** is a full-stack construction project and finance management application designed for small construction teams.
+BuildFlow is a full-stack construction project and task management application. It combines a FastAPI backend, a React and TypeScript frontend, a local SQLite database, and JWT authentication in one responsive workspace.
 
-The goal of the project is to manage projects, tasks, expenses, incomes, and dashboard summaries in one practical business application.
+## Product overview
 
-This is my main portfolio project, built to demonstrate backend architecture, authentication, protected routes, database logic, API testing, GitHub workflow, and AI-assisted development.
+BuildFlow helps authenticated users organize construction Projects and their Tasks while keeping every user's data isolated. The v1.0.0 release includes account management, Project and Task workflows, archiving, and an authenticated Dashboard summary.
 
----
+### Technology stack
 
-## Current Status
+- FastAPI and Pydantic
+- SQLAlchemy with SQLite
+- JWT authentication and bcrypt password hashing
+- React, TypeScript, and Vite
+- Responsive CSS without an external UI library
 
-**Version: 0.9.0**
+## Authentication
 
-The backend currently supports authentication, protected user routes, project ownership validation, project management, project archiving, and authenticated Task management within Projects.
+- Register with a username, email address, and password.
+- Log in to receive a one-hour JWT access token.
+- Persist the JWT in browser local storage and restore the session on reload.
+- Protect authenticated frontend routes.
+- Load the current user from `GET /api/auth/me`.
+- Log out by removing the persisted token and clearing authentication state.
+- Restrict Projects, Tasks, and Dashboard aggregates to the authenticated owner.
 
----
+## Projects
 
-## Implemented Features
+Authenticated users can list, create, view, and partially update their own Projects. Project status is validated against these canonical values:
 
-### Backend
+- `planned`
+- `active`
+- `completed`
 
-* FastAPI backend
-* Professional backend folder structure
-* SQLite database setup
-* SQLAlchemy configuration
-* User database model
-* Project database model
-* Password hashing with bcrypt
-* JWT access token generation
-* JWT token verification
-* Protected current user endpoint
-* User repository layer
-* User service layer
-* Project repository layer
-* Project service layer
-* Task database model
-* Task repository layer
-* Task service layer
-* Project ownership validation
-* Project creation
-* Project listing
-* Project detail endpoint
-* Project update endpoint
-* Project archive endpoint
-* Archived projects hidden by default
-* Optional archived project listing with `include_archived=true`
-* Tasks linked to Projects
-* Task creation
-* Task listing by project
-* Task detail endpoint
-* Partial Task update
-* Task completion endpoint
-* Task access protected by project ownership
-* Archived projects are read-only while their Tasks remain readable
-* Health check endpoint
-* Database health check endpoint
+Archiving is separate from status through `is_archived`. Projects can be archived and unarchived, archived Projects are hidden from the default list, and `include_archived=true` includes them in the API listing. Archived Projects and their existing Tasks remain readable, but general Project edits and Task mutations are blocked until the Project is unarchived.
 
-### Frontend
+## Tasks
 
-* React TypeScript frontend
-* Vite setup
-* Frontend connected to backend API
-* Basic frontend/backend communication tested
+Tasks are scoped to a Project owned by the authenticated user. BuildFlow supports Project-scoped listing, creation, detail data, partial updates, and a dedicated Complete action.
 
----
+Task statuses:
 
-## Tech Stack
+- `todo`
+- `in_progress`
+- `done`
 
-### Backend
+Task priorities:
 
-* Python
-* FastAPI
-* SQLAlchemy
-* SQLite
-* Pydantic
-* JWT authentication
-* bcrypt password hashing
-* Uvicorn
+- `low`
+- `medium`
+- `high`
 
-### Frontend
+Descriptions and due dates are optional. Tasks belonging to archived Projects remain readable, while creation, updates, and completion are blocked.
 
-* React
-* TypeScript
-* Vite
-* HTML
-* CSS
+## Dashboard
 
-### Tools
+The authenticated Dashboard summarizes only data owned by the current user. It displays:
 
-* Git
-* GitHub
-* VS Code
-* Swagger UI
-* AI-assisted development workflow
+- total, planned, active, completed, and archived Project counts
+- total budget across all owned Projects
+- total, to-do, in-progress, and done Task counts
+- current-user account information
+- backend health and API version
 
----
+Project totals and budget include active and archived Projects. Task totals also include Tasks retained by archived Projects.
 
-## Backend Architecture
+## Frontend
 
-The backend follows a clean layered structure:
+The React application provides:
+
+- a responsive authenticated layout with sidebar navigation and a shared header
+- desktop and mobile support
+- loading, error, retry, and empty states
+- Project creation and partial-update forms
+- Task creation and partial-update forms
+- dedicated Project archive, Project unarchive, and Task completion actions
+- centralized API and authentication handling
+
+## Architecture
+
+The backend follows this request flow:
 
 ```text
-backend/
-└── app/
-    ├── core/
-    ├── models/
-    ├── repositories/
-    ├── routes/
-    ├── schemas/
-    ├── services/
-    └── main.py
+route -> service -> repository -> database
 ```
 
-### Layer responsibilities
+- Routes define HTTP endpoints, dependencies, status codes, and response models.
+- Services coordinate ownership checks and business rules.
+- Repositories perform SQLAlchemy queries and persistence.
+- Models and schemas define database records and validated API data.
+- Core modules provide database setup and authentication dependencies.
 
-* `models` — database tables
-* `schemas` — request and response validation
-* `repositories` — direct database operations
-* `services` — business logic
-* `routes` — API endpoints
-* `core` — database setup, security, authentication dependencies
+The frontend follows this flow:
 
----
+```text
+page/component -> API module -> shared API client -> FastAPI
+```
 
-## API Endpoints
+Pages and components own UI state, feature API modules define typed requests, and the shared API client applies the configured base URL, JWT header, response parsing, and readable API errors.
+
+## Local installation
+
+### Prerequisites
+
+- Python 3.10 or newer
+- Node.js 20.19 or newer, or Node.js 22.12 or newer
+- Git
+
+### Backend
+
+From the repository root in Windows PowerShell:
+
+```powershell
+Set-Location .\backend
+py -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+
+$secretBytes = New-Object byte[] 32
+$randomNumberGenerator = [System.Security.Cryptography.RandomNumberGenerator]::Create()
+$randomNumberGenerator.GetBytes($secretBytes)
+$randomNumberGenerator.Dispose()
+$env:BUILDFLOW_SECRET_KEY = [Convert]::ToBase64String($secretBytes)
+
+python -m uvicorn app.main:app --reload
+```
+
+`BUILDFLOW_SECRET_KEY` is required to sign and verify JWTs. Set it in every terminal or deployment environment that starts the API, and keep the value private and stable for as long as issued tokens should remain valid.
+
+The backend creates `backend/buildflow.db` automatically when started from the `backend` directory.
+
+### Frontend
+
+In a second Windows PowerShell terminal, from the repository root:
+
+```powershell
+Set-Location .\frontend
+npm ci
+Copy-Item .env.example .env
+npm run dev
+```
+
+The example environment file configures `VITE_API_BASE_URL=http://127.0.0.1:8000`. Change the local `.env` value when the API runs at another address.
+
+### Local URLs
+
+- Frontend: <http://localhost:5173>
+- API: <http://127.0.0.1:8000>
+- Swagger UI: <http://127.0.0.1:8000/docs>
+
+Do not commit `.venv`, `node_modules`, local `.env` files, or the local SQLite database. These paths and file types are excluded by the repository ignore rules.
+
+### Existing local databases
+
+New data accepts only the canonical Project statuses. For a pre-v1.0 local database containing known legacy Project status values, review and run the one-time utility manually from the repository root:
+
+```powershell
+.\backend\.venv\Scripts\python.exe .\backend\scripts\normalize_project_statuses.py
+```
+
+The script prints distinct values and affected counts first, aborts without changes when it finds an unknown value, and is safe to run again after normalization. It is never run automatically during application startup.
+
+## API overview
+
+Authentication, Project, Task, and Dashboard endpoints require JWT authentication except for registration and login. Health endpoints and the API root are public.
 
 ### Authentication
 
-| Method | Endpoint             | Description                    |
-| ------ | -------------------- | ------------------------------ |
-| POST   | `/api/auth/register` | Register a new user            |
-| POST   | `/api/auth/login`    | Login and receive JWT token    |
-| GET    | `/api/auth/me`       | Get current authenticated user |
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `POST` | `/api/auth/register` | Register a user |
+| `POST` | `/api/auth/login` | Log in and receive a JWT |
+| `GET` | `/api/auth/me` | Load the current authenticated user |
 
 ### Projects
 
-| Method | Endpoint                              | Description                                          |
-| ------ | ------------------------------------- | ---------------------------------------------------- |
-| POST   | `/api/projects`                       | Create a new project                                 |
-| GET    | `/api/projects`                       | List current user's active projects                  |
-| GET    | `/api/projects?include_archived=true` | List current user's projects including archived ones |
-| GET    | `/api/projects/{project_id}`          | Get one project by ID                                |
-| PATCH  | `/api/projects/{project_id}`          | Update a project                                     |
-| PATCH  | `/api/projects/{project_id}/archive`  | Archive a project                                    |
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `POST` | `/api/projects` | Create a Project |
+| `GET` | `/api/projects` | List owned, non-archived Projects |
+| `GET` | `/api/projects?include_archived=true` | List all owned Projects |
+| `GET` | `/api/projects/{project_id}` | Get an owned Project |
+| `PATCH` | `/api/projects/{project_id}` | Partially update a non-archived Project |
+| `PATCH` | `/api/projects/{project_id}/archive` | Archive a Project |
+| `PATCH` | `/api/projects/{project_id}/unarchive` | Unarchive a Project |
 
 ### Tasks
 
-All Task endpoints require JWT authentication. Tasks belong to Projects and are accessible only through Projects owned by the current user.
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `POST` | `/api/projects/{project_id}/tasks` | Create a Task in an owned Project |
+| `GET` | `/api/projects/{project_id}/tasks` | List a Project's Tasks |
+| `GET` | `/api/projects/{project_id}/tasks/{task_id}` | Get Task detail data |
+| `PATCH` | `/api/projects/{project_id}/tasks/{task_id}` | Partially update a Task |
+| `PATCH` | `/api/projects/{project_id}/tasks/{task_id}/complete` | Mark a Task as `done` |
 
-| Method | Endpoint                                            | Description                                  |
-| ------ | --------------------------------------------------- | -------------------------------------------- |
-| POST   | `/api/projects/{project_id}/tasks`                  | Create a Task for a Project                  |
-| GET    | `/api/projects/{project_id}/tasks`                  | List Tasks for a Project                     |
-| GET    | `/api/projects/{project_id}/tasks/{task_id}`        | Get one Task by ID                           |
-| PATCH  | `/api/projects/{project_id}/tasks/{task_id}`        | Partially update a Task                      |
-| PATCH  | `/api/projects/{project_id}/tasks/{task_id}/complete` | Mark a Task as `done`                      |
+### Dashboard
 
-Task status values are `todo`, `in_progress`, and `done`. Task priority values are `low`, `medium`, and `high`. A due date is optional.
-
-Task creation, update, and completion are blocked for archived Projects because archived Projects are read-only. Tasks in archived Projects can still be listed and viewed. Invalid status or priority values are rejected by Pydantic validation.
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/api/dashboard/summary` | Get the authenticated user's Project, budget, and Task summary |
 
 ### Health
 
-| Method | Endpoint     | Description           |
-| ------ | ------------ | --------------------- |
-| GET    | `/health`    | Basic health check    |
-| GET    | `/health/db` | Database health check |
-
----
-
-## Latest Update - v0.9.0
-
-BuildFlow v0.9.0 added the Task module.
-
-Authenticated users can now create Tasks within their own Projects, list a Project's Tasks, view Task details, partially update Tasks, and mark Tasks as complete. Each Task supports:
-
-* a required title
-* an optional description
-* status values of `todo`, `in_progress`, or `done`
-* priority values of `low`, `medium`, or `high`
-* an optional due date
-
-Project ownership protects every Task endpoint. Archived Projects and their Tasks remain readable, but Task creation, updates, and completion are blocked because archived Projects are read-only. Pydantic validation rejects unsupported status and priority values.
-
----
-
-## Manual Testing
-
-The v0.9.0 backend flow was tested through Swagger UI:
-
-1. Register user
-2. Login user
-3. Authorize with JWT token
-4. Create project
-5. List projects
-6. Get project details
-7. Update project
-8. Archive project
-9. Verify archived project is hidden from normal project list
-10. Verify archived project appears with `include_archived=true`
-11. Create a Task for a Project
-12. List Tasks by Project
-13. Get Task details
-14. Partially update a Task
-15. Mark a Task as complete
-16. Verify another user's Project Tasks are inaccessible
-17. Verify archived Project Tasks remain readable
-18. Verify archived Project Tasks cannot be created, updated, or completed
-19. Verify invalid Task status and priority values are rejected
-
----
-
-## AI-Assisted Development Workflow
-
-This project is developed with an AI-assisted workflow.
-
-AI tools are used for planning, code review, debugging support, and implementation guidance. Generated code is not accepted blindly. Each feature is reviewed, tested through Swagger UI, and committed only after it works correctly.
-
-The workflow focuses on:
-
-* understanding the architecture
-* controlling generated code
-* testing API behavior
-* debugging step by step
-* using Git and GitHub properly
-* documenting implemented features
-
----
-
-## Roadmap
-
-### v0.9.0 - Complete
-
-* Task module
-* Task creation
-* Task listing and detail
-* Partial Task update
-* Task completion
-* Project ownership protection
-* Archived Project read-only rules
-
-### v0.10
-
-* Expense module
-* Income module
-* Project financial tracking
-
-### v0.11
-
-* Dashboard summary endpoint
-* Project totals
-* Expense and income summaries
-
-### v1.0
-
-* Backend MVP completion
-* Full README documentation
-* Final backend cleanup
-* Frontend MVP integration
-
----
-
-## Project Goal
-
-BuildFlow is intended to become a practical full-stack portfolio project that demonstrates junior backend and full-stack development skills through a real business domain.
-
-The project combines:
-
-* backend API development
-* authentication
-* database modeling
-* protected routes
-* ownership validation
-* project management logic
-* AI-assisted development workflow
-* React frontend integration
-
----
-
-## Repository
-
-https://github.com/GordonBlo/BuildFlow
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/` | Get API entry-point links |
+| `GET` | `/health` | Get API health and version |
+| `GET` | `/health/db` | Verify the database connection |

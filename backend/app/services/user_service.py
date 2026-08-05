@@ -29,18 +29,10 @@ def register_user(db: Session, user_data: UserCreate):
 def login_user(db: Session, login_data: LoginRequest):
     user = get_user_by_email(db, login_data.email)
 
-    if not user or not verify_password(login_data.password, user.password_hash):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid email or password"
-        )
-
-    password_is_valid = verify_password(
+    if not user or not verify_password(
         plain_password=login_data.password,
         hashed_password=user.password_hash
-    )
-
-    if not password_is_valid:
+    ):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid email or password"

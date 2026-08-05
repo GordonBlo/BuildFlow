@@ -63,6 +63,24 @@ def update_my_project(
     project_data: ProjectUpdate,
     current_user: User
 ):
+    existing_project = get_project_by_id_and_owner(
+        db=db,
+        project_id=project_id,
+        owner_id=current_user.id
+    )
+
+    if existing_project is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Project not found"
+        )
+
+    if existing_project.is_archived:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Archived projects are read-only"
+        )
+
     project = update_project(
         db=db,
         project_id=project_id,
