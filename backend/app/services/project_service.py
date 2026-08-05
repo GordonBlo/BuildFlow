@@ -7,6 +7,7 @@ from app.repositories.project_repository import (
     create_project,
     get_project_by_id_and_owner,
     get_projects_by_owner,
+    unarchive_project,
     update_project,
 )
 from app.schemas.project_schema import ProjectCreate, ProjectUpdate
@@ -62,6 +63,24 @@ def update_my_project(
     project_data: ProjectUpdate,
     current_user: User
 ):
+    existing_project = get_project_by_id_and_owner(
+        db=db,
+        project_id=project_id,
+        owner_id=current_user.id
+    )
+
+    if existing_project is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Project not found"
+        )
+
+    if existing_project.is_archived:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Archived projects are read-only"
+        )
+
     project = update_project(
         db=db,
         project_id=project_id,
@@ -84,6 +103,26 @@ def archive_my_project(
     current_user: User
 ):
     project = archive_project(
+        db=db,
+        project_id=project_id,
+        owner_id=current_user.id
+    )
+
+    if project is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Project not found"
+        )
+
+    return project
+
+
+def unarchive_my_project(
+    db: Session,
+    project_id: int,
+    current_user: User
+):
+    project = unarchive_project(
         db=db,
         project_id=project_id,
         owner_id=current_user.id

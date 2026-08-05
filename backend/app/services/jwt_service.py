@@ -1,10 +1,17 @@
+import os
 from datetime import datetime, timedelta, timezone
 
 import jwt
 
 from fastapi import HTTPException, status
 
-SECRET_KEY ="buildflow-dev-secret-change-this-later"
+SECRET_KEY = os.getenv("BUILDFLOW_SECRET_KEY")
+
+if not SECRET_KEY:
+    raise RuntimeError(
+        "BUILDFLOW_SECRET_KEY must be set before starting the BuildFlow API"
+    )
+
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
