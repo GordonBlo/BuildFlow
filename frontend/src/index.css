@@ -79,6 +79,7 @@ body {
   min-height: 100vh;
   margin: 0;
   background: var(--color-bg);
+  overflow-x: clip;
 }
 
 button,
@@ -126,6 +127,7 @@ h2,
 h3 {
   color: var(--color-text);
   line-height: 1.18;
+  overflow-wrap: anywhere;
 }
 
 h1 {
@@ -311,7 +313,9 @@ ul {
 
 .app-header__account {
   display: flex;
+  flex: 1;
   align-items: center;
+  justify-content: flex-end;
   gap: var(--space-3);
   min-width: 0;
 }
@@ -385,6 +389,7 @@ ul {
   display: grid;
   gap: var(--space-8);
   min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .page-header,
@@ -439,6 +444,10 @@ ul {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(11rem, 100%), 1fr));
   gap: var(--space-4);
+}
+
+.dashboard-summary {
+  min-width: 0;
 }
 
 .summary-card {
@@ -681,6 +690,7 @@ button:disabled {
   display: grid;
   gap: var(--space-2);
   min-width: 0;
+  transition: opacity 160ms ease;
 }
 
 .form-field--wide,
@@ -694,6 +704,19 @@ legend {
   color: var(--color-text);
   font-size: var(--text-sm);
   font-weight: 700;
+}
+
+.required-marker {
+  color: var(--color-danger);
+  font-weight: 850;
+}
+
+form[aria-busy="true"] {
+  cursor: progress;
+}
+
+form[aria-busy="true"] .form-field {
+  opacity: 0.72;
 }
 
 input,
@@ -761,6 +784,64 @@ legend {
   line-height: 1.55;
   border: 1px solid;
   border-radius: var(--radius-md);
+}
+
+.loading-state {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 3.5rem;
+  color: #24556e;
+  background: var(--color-info-soft);
+  border-color: #c6dce8;
+}
+
+.loading-state p {
+  margin-bottom: 0;
+  color: inherit;
+}
+
+.loading-state__indicator {
+  flex: 0 0 auto;
+  width: 1.1rem;
+  height: 1.1rem;
+  border: 2px solid color-mix(in srgb, var(--color-info) 28%, transparent);
+  border-top-color: var(--color-info);
+  border-radius: 50%;
+  animation: loading-spin 700ms linear infinite;
+}
+
+.error-message {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  color: #7b2929;
+  background: var(--color-danger-soft);
+  border-color: #efc3c3;
+}
+
+.error-message p {
+  flex: 1;
+  min-width: 0;
+  margin-bottom: 0;
+  color: inherit;
+  overflow-wrap: anywhere;
+}
+
+.error-message .button {
+  flex: 0 0 auto;
+}
+
+.form-grid > .error-message,
+fieldset > .error-message {
+  grid-column: 1 / -1;
+}
+
+@keyframes loading-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 [role="alert"] {
@@ -929,6 +1010,11 @@ legend {
   margin-bottom: 0;
 }
 
+.project-card__title,
+.task-card__title {
+  overflow-wrap: anywhere;
+}
+
 .project-card__header a {
   color: var(--color-text);
   text-decoration: none;
@@ -949,6 +1035,10 @@ legend {
   gap: var(--space-3);
   padding-top: var(--space-4);
   border-top: 1px solid var(--color-border);
+}
+
+.card-details > div {
+  min-width: 0;
 }
 
 .project-card__link {
@@ -994,6 +1084,9 @@ legend {
 }
 
 .empty-state {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-5);
   padding: var(--space-10) var(--space-6);
   background: var(--color-surface-subtle);
   border: 1px dashed var(--color-border-strong);
@@ -1003,6 +1096,21 @@ legend {
 .empty-state h3,
 .empty-state p {
   margin-bottom: var(--space-2);
+}
+
+.empty-state__content {
+  max-width: 34rem;
+}
+
+.empty-state__description:last-child {
+  margin-bottom: 0;
+}
+
+.empty-state__action {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-3);
 }
 
 .state-page {
@@ -1151,8 +1259,12 @@ legend {
   }
 
   .sidebar__link {
-    min-height: 2.4rem;
+    min-height: 2.75rem;
     padding: var(--space-2) var(--space-3);
+  }
+
+  .button--compact {
+    min-height: 2.75rem;
   }
 
   .sidebar__link-marker,
@@ -1162,6 +1274,7 @@ legend {
 
   .app-header {
     position: relative;
+    flex-wrap: wrap;
     grid-column: auto;
     min-height: 4.5rem;
     height: auto;
@@ -1207,6 +1320,15 @@ legend {
     gap: var(--space-4);
   }
 
+  .error-message {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .error-message .button {
+    width: 100%;
+  }
+
   .page-header .button,
   .archive-panel .button {
     width: 100%;
@@ -1226,6 +1348,10 @@ legend {
 
   .project-card {
     padding: var(--space-5);
+  }
+
+  .card-details > div {
+    align-items: flex-start;
   }
 
   .auth-page,
@@ -1264,7 +1390,9 @@ legend {
   }
 
   .panel,
-  .auth-card {
+  .auth-card,
+  .task-card,
+  .summary-card {
     padding: var(--space-5);
   }
 

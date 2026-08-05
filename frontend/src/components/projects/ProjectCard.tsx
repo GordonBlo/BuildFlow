@@ -18,11 +18,11 @@ function ProjectCard({ project }: ProjectCardProps) {
   return (
     <article className="project-card">
       <header className="project-card__header">
-        <h2>
+        <h2 className="project-card__title">
           <Link to={`/projects/${project.id}`}>{project.name}</Link>
         </h2>
         <span
-          className={`badge ${
+          className={`badge project-card__archive-badge ${
             project.is_archived ? "badge--neutral" : "badge--success"
           }`}
         >
@@ -42,7 +42,9 @@ function ProjectCard({ project }: ProjectCardProps) {
         <div>
           <dt>Status</dt>
           <dd>
-            <span className="badge badge--outline">{project.status}</span>
+            <span className="badge badge--outline project-card__status">
+              {project.status}
+            </span>
           </dd>
         </div>
         <div>

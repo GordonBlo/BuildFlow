@@ -4,6 +4,9 @@ import { Link } from "react-router";
 import { createProject, getProjects } from "../api/projectApi";
 import CreateProjectForm from "../components/projects/CreateProjectForm";
 import ProjectCard from "../components/projects/ProjectCard";
+import EmptyState from "../components/ui/EmptyState";
+import ErrorMessage from "../components/ui/ErrorMessage";
+import LoadingState from "../components/ui/LoadingState";
 import type {
   ProjectCreateRequest,
   ProjectResponse,
@@ -13,6 +16,7 @@ function ProjectsPage() {
   const [projects, setProjects] = useState<ProjectResponse[]>([]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [loadAttempt, setLoadAttempt] = useState(0);
 
   useEffect(() => {
     let isMounted = true;
@@ -44,7 +48,13 @@ function ProjectsPage() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [loadAttempt]);
+
+  function handleRetry() {
+    setErrorMessage(null);
+    setIsLoading(true);
+    setLoadAttempt((attempt) => attempt + 1);
+  }
 
   async function handleCreateProject(projectData: ProjectCreateRequest) {
     const createdProject = await createProject(projectData);
@@ -89,14 +99,23 @@ function ProjectsPage() {
           )}
         </div>
 
-        {isLoading && <p role="status">Loading projects...</p>}
-        {errorMessage && <p role="alert">{errorMessage}</p>}
+        {isLoading && <LoadingState message="Loading projects..." />}
+        {errorMessage && (
+          <ErrorMessage message={errorMessage} onRetry={handleRetry} />
+        )}
 
         {!isLoading && !errorMessage && projects.length === 0 && (
-          <div className="empty-state">
-            <h3>No active projects yet</h3>
-            <p>Create your first project above to start organizing the work.</p>
-          </div>
+          <EmptyState
+            title="No active projects yet"
+            description="Create your first project above to start organizing the work."
+          >
+            <a
+              className="button button--secondary button--compact"
+              href="#create-project-heading"
+            >
+              Create a project
+            </a>
+          </EmptyState>
         )}
 
         {!isLoading && projects.length > 0 && (

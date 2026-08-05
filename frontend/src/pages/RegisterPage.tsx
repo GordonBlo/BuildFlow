@@ -2,6 +2,7 @@ import { useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router";
 
 import { useAuth } from "../auth/AuthContext";
+import ErrorMessage from "../components/ui/ErrorMessage";
 
 function RegisterPage() {
   const navigate = useNavigate();
@@ -14,6 +15,11 @@ function RegisterPage() {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    if (isSubmitting) {
+      return;
+    }
+
     setErrorMessage(null);
     setIsSubmitting(true);
 
@@ -44,9 +50,16 @@ function RegisterPage() {
           <p>Bring your projects and tasks into one clear workspace.</p>
         </header>
 
-        <form className="form-grid" onSubmit={handleSubmit}>
+        <form
+          className="form-grid"
+          onSubmit={handleSubmit}
+          aria-busy={isSubmitting}
+        >
           <div className="form-field">
-            <label htmlFor="register-username">Username</label>
+            <label htmlFor="register-username">
+              Username
+              <span className="required-marker" aria-hidden="true"> *</span>
+            </label>
             <input
               id="register-username"
               name="username"
@@ -61,7 +74,10 @@ function RegisterPage() {
           </div>
 
           <div className="form-field">
-            <label htmlFor="register-email">Email</label>
+            <label htmlFor="register-email">
+              Email
+              <span className="required-marker" aria-hidden="true"> *</span>
+            </label>
             <input
               id="register-email"
               name="email"
@@ -74,7 +90,10 @@ function RegisterPage() {
           </div>
 
           <div className="form-field">
-            <label htmlFor="register-password">Password</label>
+            <label htmlFor="register-password">
+              Password
+              <span className="required-marker" aria-hidden="true"> *</span>
+            </label>
             <input
               id="register-password"
               name="password"
@@ -88,7 +107,7 @@ function RegisterPage() {
             />
           </div>
 
-          {errorMessage && <p role="alert">{errorMessage}</p>}
+          {errorMessage && <ErrorMessage message={errorMessage} />}
 
           <button
             className="button button--full"

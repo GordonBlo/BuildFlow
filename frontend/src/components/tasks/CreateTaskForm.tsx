@@ -5,6 +5,7 @@ import type {
   TaskPriority,
   TaskStatus,
 } from "../../types/task";
+import ErrorMessage from "../ui/ErrorMessage";
 
 type CreateTaskFormProps = {
   onSubmit: (taskData: TaskCreateRequest) => Promise<void>;
@@ -29,6 +30,11 @@ function CreateTaskForm({ onSubmit }: CreateTaskFormProps) {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    if (isSubmitting) {
+      return;
+    }
+
     setErrorMessage(null);
 
     const normalizedTitle = title.trim();
@@ -61,9 +67,16 @@ function CreateTaskForm({ onSubmit }: CreateTaskFormProps) {
   }
 
   return (
-    <form className="form-grid form-grid--two-columns" onSubmit={handleSubmit}>
+    <form
+      className="form-grid form-grid--two-columns"
+      onSubmit={handleSubmit}
+      aria-busy={isSubmitting}
+    >
       <div className="form-field form-field--wide">
-        <label htmlFor="task-title">Title</label>
+        <label htmlFor="task-title">
+          Title
+          <span className="required-marker" aria-hidden="true"> *</span>
+        </label>
         <input
           id="task-title"
           name="title"
@@ -88,12 +101,16 @@ function CreateTaskForm({ onSubmit }: CreateTaskFormProps) {
       </div>
 
       <div className="form-field">
-        <label htmlFor="task-status">Status</label>
+        <label htmlFor="task-status">
+          Status
+          <span className="required-marker" aria-hidden="true"> *</span>
+        </label>
         <select
           id="task-status"
           name="status"
           value={status}
           onChange={(event) => setStatus(event.target.value as TaskStatus)}
+          required
         >
           <option value="todo">To do</option>
           <option value="in_progress">In progress</option>
@@ -102,12 +119,16 @@ function CreateTaskForm({ onSubmit }: CreateTaskFormProps) {
       </div>
 
       <div className="form-field">
-        <label htmlFor="task-priority">Priority</label>
+        <label htmlFor="task-priority">
+          Priority
+          <span className="required-marker" aria-hidden="true"> *</span>
+        </label>
         <select
           id="task-priority"
           name="priority"
           value={priority}
           onChange={(event) => setPriority(event.target.value as TaskPriority)}
+          required
         >
           <option value="low">Low</option>
           <option value="medium">Medium</option>
@@ -126,7 +147,7 @@ function CreateTaskForm({ onSubmit }: CreateTaskFormProps) {
         />
       </div>
 
-      {errorMessage && <p className="form-message" role="alert">{errorMessage}</p>}
+      {errorMessage && <ErrorMessage message={errorMessage} />}
 
       <div className="form-actions form-field--wide">
         <button className="button" type="submit" disabled={isSubmitting}>

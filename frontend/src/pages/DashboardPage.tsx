@@ -4,6 +4,8 @@ import { Link } from "react-router";
 import { getDashboardSummary } from "../api/dashboardApi";
 import { getHealth, type HealthResponse } from "../api/healthApi";
 import { useAuth } from "../auth/AuthContext";
+import ErrorMessage from "../components/ui/ErrorMessage";
+import LoadingState from "../components/ui/LoadingState";
 import type { DashboardSummary } from "../types/dashboard";
 
 function formatBudget(value: number): string {
@@ -19,11 +21,13 @@ function DashboardPage() {
     null,
   );
   const [isHealthLoading, setIsHealthLoading] = useState(true);
+  const [healthLoadAttempt, setHealthLoadAttempt] = useState(0);
   const [summary, setSummary] = useState<DashboardSummary | null>(null);
   const [summaryErrorMessage, setSummaryErrorMessage] = useState<string | null>(
     null,
   );
   const [isSummaryLoading, setIsSummaryLoading] = useState(true);
+  const [summaryLoadAttempt, setSummaryLoadAttempt] = useState(0);
 
   useEffect(() => {
     let isMounted = true;
@@ -55,7 +59,7 @@ function DashboardPage() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [healthLoadAttempt]);
 
   useEffect(() => {
     let isMounted = true;
@@ -87,7 +91,21 @@ function DashboardPage() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [summaryLoadAttempt]);
+
+  function handleHealthRetry() {
+    setHealth(null);
+    setHealthErrorMessage(null);
+    setIsHealthLoading(true);
+    setHealthLoadAttempt((attempt) => attempt + 1);
+  }
+
+  function handleSummaryRetry() {
+    setSummary(null);
+    setSummaryErrorMessage(null);
+    setIsSummaryLoading(true);
+    setSummaryLoadAttempt((attempt) => attempt + 1);
+  }
 
   return (
     <div className="page dashboard-page">
@@ -115,12 +133,15 @@ function DashboardPage() {
           </div>
         </div>
 
-        {isSummaryLoading && <p role="status">Loading Dashboard summary...</p>}
+        {isSummaryLoading && (
+          <LoadingState message="Loading Dashboard summary..." />
+        )}
 
         {summaryErrorMessage && (
-          <p role="alert">
-            Dashboard summary could not be loaded: {summaryErrorMessage}
-          </p>
+          <ErrorMessage
+            message={`Dashboard summary could not be loaded: ${summaryErrorMessage}`}
+            onRetry={handleSummaryRetry}
+          />
         )}
 
         {summary && (
@@ -251,13 +272,14 @@ function DashboardPage() {
           </div>
 
           {isHealthLoading && (
-            <p role="status">Checking backend connection...</p>
+            <LoadingState message="Checking backend connection..." />
           )}
 
           {healthErrorMessage && (
-            <p role="alert">
-              Backend connection failed: {healthErrorMessage}
-            </p>
+            <ErrorMessage
+              message={`Backend connection failed: ${healthErrorMessage}`}
+              onRetry={handleHealthRetry}
+            />
           )}
 
           {health && (

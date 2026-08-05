@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import EditTaskForm from "./EditTaskForm";
+import ErrorMessage from "../ui/ErrorMessage";
 import type { TaskResponse, TaskUpdateRequest } from "../../types/task";
 
 type TaskCardProps = {
@@ -63,12 +64,16 @@ function TaskCard({
   return (
     <article className="task-card">
       <header className="task-card__header">
-        <h3>{task.title}</h3>
+        <h3 className="task-card__title">{task.title}</h3>
         <div className="badge-group" aria-label="Task classification">
-          <span className={`badge badge--${task.status.replace("_", "-")}`}>
+          <span
+            className={`badge task-card__status badge--${task.status.replace("_", "-")}`}
+          >
             {task.status.replace("_", " ")}
           </span>
-          <span className={`badge badge--priority-${task.priority}`}>
+          <span
+            className={`badge task-card__priority badge--priority-${task.priority}`}
+          >
             {task.priority} priority
           </span>
         </div>
@@ -87,7 +92,7 @@ function TaskCard({
         </dl>
       )}
 
-      {errorMessage && <p role="alert">{errorMessage}</p>}
+      {errorMessage && <ErrorMessage message={errorMessage} />}
 
       {!isProjectArchived && (
         <footer className="task-card__actions">
@@ -100,7 +105,7 @@ function TaskCard({
             }}
             disabled={isCompleting}
           >
-            Edit
+            Edit task
           </button>
 
           {task.status !== "done" && (
@@ -110,7 +115,7 @@ function TaskCard({
               onClick={handleComplete}
               disabled={isCompleting}
             >
-              {isCompleting ? "Completing Task..." : "Complete"}
+              {isCompleting ? "Completing Task..." : "Complete task"}
             </button>
           )}
         </footer>

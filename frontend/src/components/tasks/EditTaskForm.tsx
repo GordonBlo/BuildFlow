@@ -6,6 +6,7 @@ import type {
   TaskStatus,
   TaskUpdateRequest,
 } from "../../types/task";
+import ErrorMessage from "../ui/ErrorMessage";
 
 type EditTaskFormProps = {
   task: TaskResponse;
@@ -24,6 +25,11 @@ function EditTaskForm({ task, onSubmit, onCancel }: EditTaskFormProps) {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    if (isSubmitting) {
+      return;
+    }
+
     setErrorMessage(null);
 
     const taskData: TaskUpdateRequest = {};
@@ -75,12 +81,19 @@ function EditTaskForm({ task, onSubmit, onCancel }: EditTaskFormProps) {
   }
 
   return (
-    <form className="form-grid" onSubmit={handleSubmit}>
+    <form
+      className="form-grid"
+      onSubmit={handleSubmit}
+      aria-busy={isSubmitting}
+    >
       <fieldset disabled={isSubmitting}>
         <legend>Edit Task</legend>
 
         <div className="form-field">
-          <label htmlFor={`edit-task-title-${task.id}`}>Title</label>
+          <label htmlFor={`edit-task-title-${task.id}`}>
+            Title
+            <span className="required-marker" aria-hidden="true"> *</span>
+          </label>
           <input
             id={`edit-task-title-${task.id}`}
             name="title"
@@ -107,12 +120,16 @@ function EditTaskForm({ task, onSubmit, onCancel }: EditTaskFormProps) {
         </div>
 
         <div className="form-field">
-          <label htmlFor={`edit-task-status-${task.id}`}>Status</label>
+          <label htmlFor={`edit-task-status-${task.id}`}>
+            Status
+            <span className="required-marker" aria-hidden="true"> *</span>
+          </label>
           <select
             id={`edit-task-status-${task.id}`}
             name="status"
             value={status}
             onChange={(event) => setStatus(event.target.value as TaskStatus)}
+            required
           >
             <option value="todo">To do</option>
             <option value="in_progress">In progress</option>
@@ -121,7 +138,10 @@ function EditTaskForm({ task, onSubmit, onCancel }: EditTaskFormProps) {
         </div>
 
         <div className="form-field">
-          <label htmlFor={`edit-task-priority-${task.id}`}>Priority</label>
+          <label htmlFor={`edit-task-priority-${task.id}`}>
+            Priority
+            <span className="required-marker" aria-hidden="true"> *</span>
+          </label>
           <select
             id={`edit-task-priority-${task.id}`}
             name="priority"
@@ -129,6 +149,7 @@ function EditTaskForm({ task, onSubmit, onCancel }: EditTaskFormProps) {
             onChange={(event) =>
               setPriority(event.target.value as TaskPriority)
             }
+            required
           >
             <option value="low">Low</option>
             <option value="medium">Medium</option>
@@ -147,7 +168,7 @@ function EditTaskForm({ task, onSubmit, onCancel }: EditTaskFormProps) {
           />
         </div>
 
-        {errorMessage && <p className="form-message" role="alert">{errorMessage}</p>}
+        {errorMessage && <ErrorMessage message={errorMessage} />}
 
         <div className="form-actions">
           <button
@@ -159,7 +180,7 @@ function EditTaskForm({ task, onSubmit, onCancel }: EditTaskFormProps) {
             Cancel
           </button>
           <button className="button" type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Saving Task..." : "Save"}
+            {isSubmitting ? "Saving Task..." : "Save task"}
           </button>
         </div>
       </fieldset>

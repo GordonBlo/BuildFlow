@@ -2,6 +2,7 @@ import { useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router";
 
 import { useAuth } from "../auth/AuthContext";
+import ErrorMessage from "../components/ui/ErrorMessage";
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -13,6 +14,11 @@ function LoginPage() {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    if (isSubmitting) {
+      return;
+    }
+
     setErrorMessage(null);
     setIsSubmitting(true);
 
@@ -43,9 +49,16 @@ function LoginPage() {
           <p>Continue to your project workspace.</p>
         </header>
 
-        <form className="form-grid" onSubmit={handleSubmit}>
+        <form
+          className="form-grid"
+          onSubmit={handleSubmit}
+          aria-busy={isSubmitting}
+        >
           <div className="form-field">
-            <label htmlFor="login-email">Email</label>
+            <label htmlFor="login-email">
+              Email
+              <span className="required-marker" aria-hidden="true"> *</span>
+            </label>
             <input
               id="login-email"
               name="email"
@@ -58,7 +71,10 @@ function LoginPage() {
           </div>
 
           <div className="form-field">
-            <label htmlFor="login-password">Password</label>
+            <label htmlFor="login-password">
+              Password
+              <span className="required-marker" aria-hidden="true"> *</span>
+            </label>
             <input
               id="login-password"
               name="password"
@@ -72,7 +88,7 @@ function LoginPage() {
             />
           </div>
 
-          {errorMessage && <p role="alert">{errorMessage}</p>}
+          {errorMessage && <ErrorMessage message={errorMessage} />}
 
           <button
             className="button button--full"

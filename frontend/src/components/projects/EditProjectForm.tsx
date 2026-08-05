@@ -6,6 +6,7 @@ import {
   type ProjectStatus,
   type ProjectUpdateRequest,
 } from "../../types/project";
+import ErrorMessage from "../ui/ErrorMessage";
 
 type EditProjectFormProps = {
   project: ProjectResponse;
@@ -25,6 +26,11 @@ function EditProjectForm({ project, onSubmit }: EditProjectFormProps) {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    if (isSubmitting) {
+      return;
+    }
+
     setErrorMessage(null);
 
     const projectData: ProjectUpdateRequest = {};
@@ -96,9 +102,16 @@ function EditProjectForm({ project, onSubmit }: EditProjectFormProps) {
   }
 
   return (
-    <form className="form-grid form-grid--two-columns" onSubmit={handleSubmit}>
+    <form
+      className="form-grid form-grid--two-columns"
+      onSubmit={handleSubmit}
+      aria-busy={isSubmitting}
+    >
       <div className="form-field form-field--wide">
-        <label htmlFor="edit-project-name">Project name</label>
+        <label htmlFor="edit-project-name">
+          Project name
+          <span className="required-marker" aria-hidden="true"> *</span>
+        </label>
         <input
           id="edit-project-name"
           name="name"
@@ -135,7 +148,10 @@ function EditProjectForm({ project, onSubmit }: EditProjectFormProps) {
       </div>
 
       <div className="form-field">
-        <label htmlFor="edit-project-status">Status</label>
+        <label htmlFor="edit-project-status">
+          Status
+          <span className="required-marker" aria-hidden="true"> *</span>
+        </label>
         <select
           id="edit-project-status"
           name="status"
@@ -154,7 +170,10 @@ function EditProjectForm({ project, onSubmit }: EditProjectFormProps) {
       </div>
 
       <div className="form-field">
-        <label htmlFor="edit-project-budget">Budget</label>
+        <label htmlFor="edit-project-budget">
+          Budget
+          <span className="required-marker" aria-hidden="true"> *</span>
+        </label>
         <input
           id="edit-project-budget"
           name="budget"
@@ -189,7 +208,7 @@ function EditProjectForm({ project, onSubmit }: EditProjectFormProps) {
         />
       </div>
 
-      {errorMessage && <p className="form-message" role="alert">{errorMessage}</p>}
+      {errorMessage && <ErrorMessage message={errorMessage} />}
 
       <div className="form-actions form-field--wide">
         <button className="button" type="submit" disabled={isSubmitting}>

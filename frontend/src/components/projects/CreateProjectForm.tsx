@@ -5,6 +5,7 @@ import {
   type ProjectCreateRequest,
   type ProjectStatus,
 } from "../../types/project";
+import ErrorMessage from "../ui/ErrorMessage";
 
 type CreateProjectFormProps = {
   onSubmit: (projectData: ProjectCreateRequest) => Promise<void>;
@@ -33,6 +34,11 @@ function CreateProjectForm({ onSubmit }: CreateProjectFormProps) {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    if (isSubmitting) {
+      return;
+    }
+
     setErrorMessage(null);
 
     const normalizedName = name.trim();
@@ -73,9 +79,16 @@ function CreateProjectForm({ onSubmit }: CreateProjectFormProps) {
   }
 
   return (
-    <form className="form-grid form-grid--two-columns" onSubmit={handleSubmit}>
+    <form
+      className="form-grid form-grid--two-columns"
+      onSubmit={handleSubmit}
+      aria-busy={isSubmitting}
+    >
       <div className="form-field form-field--wide">
-        <label htmlFor="project-name">Project name</label>
+        <label htmlFor="project-name">
+          Project name
+          <span className="required-marker" aria-hidden="true"> *</span>
+        </label>
         <input
           id="project-name"
           name="name"
@@ -112,7 +125,10 @@ function CreateProjectForm({ onSubmit }: CreateProjectFormProps) {
       </div>
 
       <div className="form-field">
-        <label htmlFor="project-status">Status</label>
+        <label htmlFor="project-status">
+          Status
+          <span className="required-marker" aria-hidden="true"> *</span>
+        </label>
         <select
           id="project-status"
           name="status"
@@ -131,7 +147,10 @@ function CreateProjectForm({ onSubmit }: CreateProjectFormProps) {
       </div>
 
       <div className="form-field">
-        <label htmlFor="project-budget">Budget</label>
+        <label htmlFor="project-budget">
+          Budget
+          <span className="required-marker" aria-hidden="true"> *</span>
+        </label>
         <input
           id="project-budget"
           name="budget"
@@ -166,7 +185,7 @@ function CreateProjectForm({ onSubmit }: CreateProjectFormProps) {
         />
       </div>
 
-      {errorMessage && <p className="form-message" role="alert">{errorMessage}</p>}
+      {errorMessage && <ErrorMessage message={errorMessage} />}
 
       <div className="form-actions form-field--wide">
         <button className="button" type="submit" disabled={isSubmitting}>

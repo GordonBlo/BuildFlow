@@ -17,6 +17,9 @@ import {
 import EditProjectForm from "../components/projects/EditProjectForm";
 import CreateTaskForm from "../components/tasks/CreateTaskForm";
 import TaskCard from "../components/tasks/TaskCard";
+import EmptyState from "../components/ui/EmptyState";
+import ErrorMessage from "../components/ui/ErrorMessage";
+import LoadingState from "../components/ui/LoadingState";
 import type {
   ProjectResponse,
   ProjectUpdateRequest,
@@ -47,9 +50,11 @@ function ProjectDetailsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isArchiving, setIsArchiving] = useState(false);
   const [isUnarchiving, setIsUnarchiving] = useState(false);
+  const [projectLoadAttempt, setProjectLoadAttempt] = useState(0);
   const [tasks, setTasks] = useState<TaskResponse[]>([]);
   const [taskErrorMessage, setTaskErrorMessage] = useState<string | null>(null);
   const [areTasksLoading, setAreTasksLoading] = useState(true);
+  const [taskLoadAttempt, setTaskLoadAttempt] = useState(0);
 
   useEffect(() => {
     if (!isValidProjectId) {
@@ -91,7 +96,7 @@ function ProjectDetailsPage() {
     return () => {
       isMounted = false;
     };
-  }, [isValidProjectId, numericProjectId]);
+  }, [isValidProjectId, numericProjectId, projectLoadAttempt]);
 
   useEffect(() => {
     if (!isValidProjectId) {
@@ -125,7 +130,19 @@ function ProjectDetailsPage() {
     return () => {
       isMounted = false;
     };
-  }, [isValidProjectId, numericProjectId]);
+  }, [isValidProjectId, numericProjectId, taskLoadAttempt]);
+
+  function handleProjectRetry() {
+    setErrorMessage(null);
+    setIsLoading(true);
+    setProjectLoadAttempt((attempt) => attempt + 1);
+  }
+
+  function handleTaskRetry() {
+    setTaskErrorMessage(null);
+    setAreTasksLoading(true);
+    setTaskLoadAttempt((attempt) => attempt + 1);
+  }
 
   async function handleUpdate(projectData: ProjectUpdateRequest) {
     if (!project || project.is_archived) {
@@ -258,7 +275,7 @@ function ProjectDetailsPage() {
         <div className="panel state-card">
           <p className="eyebrow">Invalid request</p>
           <h1>Project details</h1>
-          <p role="alert">The Project ID must be a positive integer.</p>
+          <ErrorMessage message="The Project ID must be a positive integer." />
           <Link className="button button--secondary" to="/projects">
             Back to projects
           </Link>
@@ -273,7 +290,7 @@ function ProjectDetailsPage() {
         <div className="panel state-card">
           <p className="eyebrow">Project workspace</p>
           <h1>Project details</h1>
-          <p role="status">Loading project...</p>
+          <LoadingState message="Loading project..." />
           <Link className="text-link" to="/projects">
             Back to projects
           </Link>
@@ -303,7 +320,10 @@ function ProjectDetailsPage() {
         <div className="panel state-card">
           <p className="eyebrow">Unable to load</p>
           <h1>Project details</h1>
-          <p role="alert">{errorMessage ?? "Unable to load project."}</p>
+          <ErrorMessage
+            message={errorMessage ?? "Unable to load project."}
+            onRetry={handleProjectRetry}
+          />
           <Link className="button button--secondary" to="/projects">
             Back to projects
           </Link>
@@ -413,14 +433,28 @@ function ProjectDetailsPage() {
           </p>
         )}
 
-        {areTasksLoading && <p role="status">Loading Tasks...</p>}
-        {taskErrorMessage && <p role="alert">{taskErrorMessage}</p>}
+        {areTasksLoading && <LoadingState message="Loading Tasks..." />}
+        {taskErrorMessage && (
+          <ErrorMessage
+            message={taskErrorMessage}
+            onRetry={handleTaskRetry}
+          />
+        )}
 
         {!areTasksLoading && !taskErrorMessage && tasks.length === 0 && (
-          <div className="empty-state">
-            <h3>No tasks yet</h3>
-            <p>This Project does not have any Tasks yet.</p>
-          </div>
+          <EmptyState
+            title="No tasks yet"
+            description="This Project does not have any Tasks yet."
+          >
+            {!project.is_archived && (
+              <a
+                className="button button--secondary button--compact"
+                href="#create-task-heading"
+              >
+                Create a task
+              </a>
+            )}
+          </EmptyState>
         )}
 
         {!areTasksLoading && tasks.length > 0 && (
