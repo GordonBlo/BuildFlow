@@ -3,6 +3,7 @@
 ## Live Demo
 
 [Open BuildFlow Demo](https://gordonblo.github.io/BuildFlow/#/demo/dashboard)
+##
 
 BuildFlow is a full-stack construction project and task management application. It combines a FastAPI backend, a React and TypeScript frontend, a local SQLite database, and JWT authentication in one responsive workspace.
 
