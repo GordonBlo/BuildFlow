@@ -3,7 +3,7 @@ name: Deploy BuildFlow Demo to GitHub Pages
 on:
   push:
     branches:
-      - demo
+      - main
   workflow_dispatch:
 
 permissions:
