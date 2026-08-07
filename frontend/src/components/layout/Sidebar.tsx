@@ -1,14 +1,28 @@
 import { NavLink } from "react-router";
 
 const navigationItems = [
-  { to: "/dashboard", label: "Dashboard", marker: "D" },
-  { to: "/projects", label: "Projects", marker: "P" },
+  { path: "dashboard", label: "Dashboard", marker: "D" },
+  { path: "projects", label: "Projects", marker: "P" },
 ];
 
-function Sidebar() {
+type SidebarProps = {
+  basePath?: string;
+  footerText?: string;
+};
+
+function Sidebar({
+  basePath = "",
+  footerText = "Project workspace",
+}: SidebarProps) {
+  const dashboardPath = `${basePath}/dashboard`;
+
   return (
     <aside className="sidebar">
-      <NavLink className="brand" to="/dashboard" aria-label="BuildFlow home">
+      <NavLink
+        className="brand"
+        to={dashboardPath}
+        aria-label="BuildFlow home"
+      >
         <span className="brand__mark" aria-hidden="true">
           BF
         </span>
@@ -18,8 +32,8 @@ function Sidebar() {
       <nav className="sidebar__nav" aria-label="Primary navigation">
         {navigationItems.map((item) => (
           <NavLink
-            key={item.to}
-            to={item.to}
+            key={item.path}
+            to={`${basePath}/${item.path}`}
             className={({ isActive }) =>
               `sidebar__link${isActive ? " sidebar__link--active" : ""}`
             }
@@ -32,7 +46,7 @@ function Sidebar() {
         ))}
       </nav>
 
-      <p className="sidebar__footer">Project workspace</p>
+      <p className="sidebar__footer">{footerText}</p>
     </aside>
   );
 }

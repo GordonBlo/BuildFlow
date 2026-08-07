@@ -4,6 +4,7 @@ import type { ProjectResponse } from "../../types/project";
 
 type ProjectCardProps = {
   project: ProjectResponse;
+  detailsBasePath?: string;
 };
 
 function formatDate(value: string | null): string {
@@ -14,12 +15,17 @@ function formatDate(value: string | null): string {
   return new Date(`${value}T00:00:00`).toLocaleDateString();
 }
 
-function ProjectCard({ project }: ProjectCardProps) {
+function ProjectCard({
+  project,
+  detailsBasePath = "/projects",
+}: ProjectCardProps) {
+  const projectPath = `${detailsBasePath}/${project.id}`;
+
   return (
     <article className="project-card">
       <header className="project-card__header">
         <h2 className="project-card__title">
-          <Link to={`/projects/${project.id}`}>{project.name}</Link>
+          <Link to={projectPath}>{project.name}</Link>
         </h2>
         <span
           className={`badge project-card__archive-badge ${
@@ -61,8 +67,8 @@ function ProjectCard({ project }: ProjectCardProps) {
         </div>
       </dl>
 
-      <Link className="project-card__link" to={`/projects/${project.id}`}>
-        View project <span aria-hidden="true">→</span>
+      <Link className="project-card__link" to={projectPath}>
+        View project <span aria-hidden="true">&rarr;</span>
       </Link>
     </article>
   );

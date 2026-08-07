@@ -76,6 +76,20 @@ The React application provides:
 - dedicated Project archive, Project unarchive, and Task completion actions
 - centralized API and authentication handling
 
+## Interactive portfolio demo
+
+BuildFlow includes a browser-only portfolio demo at `/demo`. It uses realistic
+sample Projects and Tasks, supports the main Project and Task workflows, and
+recalculates the Dashboard as data changes. Demo changes persist in local
+storage and can be restored at any time with **Reset demo data**. The demo does
+not require an account, backend, database, JWT, or frontend environment file.
+
+For local development, run `npm run dev` in `frontend` and open
+<http://localhost:5173/demo>. To create the GitHub Pages-compatible static demo,
+run `npm run build:demo`; Vite writes the hash-routed build to
+`frontend/dist-demo` with the `/BuildFlow/` base path. The regular `npm run build`
+output and authenticated application behavior remain unchanged.
+
 ## Architecture
 
 The backend follows this request flow:
